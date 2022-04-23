@@ -21,6 +21,8 @@ static const uint64_t PageSize = 0x1000;
 
 static void * const sampleCodeModuleAddress = (void*)0x400000;
 static void * const sampleDataModuleAddress = (void*)0x500000;
+static void * const mem_for_mem_manager = (void*)0x1000000; // todo: chequear el valor correcto para mem manager
+static void * const managed_memory = (void*)0x1100000; // todo: chequear el valor correcto para managed mem
 
 typedef int (*EntryPoint)();
 
@@ -49,11 +51,13 @@ void * initializeKernelBinary() {
 	clearBSS(&bss, &endOfKernel - &bss);
 
 	load_idt();
+	
 	return getStackBase();
 }
 
 
 int main() {
 	ncClear();
+	initMemManager(mem_for_mem_manager, managed_memory);
 	return ((EntryPoint)sampleCodeModuleAddress)();
 }

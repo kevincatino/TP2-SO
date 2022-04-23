@@ -35,6 +35,8 @@ extern void sys_print_sudoku_numbers(char* line, int position, int orientationX)
 extern void sys_print_in_screen_position(char* line, int position); 
 extern void sys_screen_mode(uint16_t mode);
 extern uint64_t sys_get_milli_seconds(uint64_t time);
+void *sys_alloc(unsigned int to_alloc);
+void sys_free(void *to_free);
 
 extern void get_regs();
 

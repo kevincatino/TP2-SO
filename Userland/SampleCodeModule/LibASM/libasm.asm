@@ -13,6 +13,8 @@ GLOBAL sys_get_milli_seconds
 GLOBAL sys_print_regs
 GLOBAL div_zero
 GLOBAL throwInvalidOpcode
+GLOBAL sys_alloc
+GLOBAL sys_free
 
 
 ;-----------------------------------------------------------
@@ -216,6 +218,32 @@ sys_print_regs:
     push rbx
 
     mov rax, 12  
+    int 80h
+
+    pop rbx
+    mov rsp, rbp     
+    pop rbp     
+    ret
+
+sys_alloc:
+    push rbp     
+    mov rbp, rsp     
+    push rbx
+
+    mov rax, 13  
+    int 80h
+
+    pop rbx
+    mov rsp, rbp     
+    pop rbp     
+    ret
+
+sys_free:
+    push rbp     
+    mov rbp, rsp     
+    push rbx
+
+    mov rax, 14  
     int 80h
 
     pop rbx

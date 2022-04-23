@@ -1,11 +1,12 @@
 #include <sysCallDispatcher.h>
+#include <the_memory_manager.h>
 #include <lib.h>
 
 
 typedef uint64_t (*TypeSysCall)(uint64_t, uint64_t, uint64_t);
 
 
-static TypeSysCall arraySysCalls[255] = {(TypeSysCall)&sys_read, (TypeSysCall)&sys_write, (TypeSysCall)&sys_get_char, (TypeSysCall)&sys_get_time, (TypeSysCall)&sys_screen_divition, (TypeSysCall)&sys_screen_clear, (TypeSysCall)&sys_memory_dump, (TypeSysCall)&sys_print_user, (TypeSysCall)&sys_print_sudoku_numbers, (TypeSysCall)&sys_print_in_screen_position, (TypeSysCall)&sys_screen_mode, (TypeSysCall)&sys_get_milli_seconds, (TypeSysCall)&sys_print_regs};
+static TypeSysCall arraySysCalls[255] = {(TypeSysCall)&sys_read, (TypeSysCall)&sys_write, (TypeSysCall)&sys_get_char, (TypeSysCall)&sys_get_time, (TypeSysCall)&sys_screen_divition, (TypeSysCall)&sys_screen_clear, (TypeSysCall)&sys_memory_dump, (TypeSysCall)&sys_print_user, (TypeSysCall)&sys_print_sudoku_numbers, (TypeSysCall)&sys_print_in_screen_position, (TypeSysCall)&sys_screen_mode, (TypeSysCall)&sys_get_milli_seconds, (TypeSysCall)&sys_print_regs, (TypeSysCall)&alloc_mem, (TypeSysCall)&free_mem};
 
 
 uint64_t sysCallDispatcher(uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t rax) {
