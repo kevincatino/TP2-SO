@@ -4,6 +4,7 @@
 #include <idtLoader.h>
 #include <moduleLoader.h>
 #include <naiveConsole.h>
+#include <the_memory_manager.h>
 
 #include <keyboardDriver.h>
 #include <clockDriver.h>
@@ -58,6 +59,6 @@ void * initializeKernelBinary() {
 
 int main() {
 	ncClear();
-	initMemManager(mem_for_mem_manager, managed_memory);
+	init_mem_manager(mem_for_mem_manager, managed_memory);
 	return ((EntryPoint)sampleCodeModuleAddress)();
 }
