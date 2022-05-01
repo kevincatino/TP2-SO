@@ -6,13 +6,14 @@
 static MemoryManagerADT manager;
 
 void init_mem_manager(void *const restrict mem_for_manager, void *const restrict managedMemory) {
-  manager = create_mem_manager(mem_for_manager, managedMemory);
+  manager = createMemManager(mem_for_manager, managedMemory);
 } // hay que inicializarlo en el arranque del kernel
 
 void *alloc_mem(unsigned int to_alloc) {
-  return mem_alloc(manager, to_alloc);
+  return memoryAlloc(manager, to_alloc);
 }
 
 void free_mem(void *to_free) {
     // para despues
+    memoryFree(manager, to_free);
 }
