@@ -15,24 +15,12 @@ typedef struct ListNode
   struct ListNode *next;
 } ListNode;
 
-typedef struct WaitingNode
-{
-  pcb *process;
-  struct WaitingNode *next;
-} WaitingNode;
-
-typedef struct WaitingKeyboardList
-{
-  WaitingNode *current;
-  WaitingNode *tail;
-  uint8_t size;
-} WaitingKeyboardList;
 
 typedef struct Scheduler
 {
   uint32_t quantum;
   uint32_t priorityQuantum;
-  uint8_t fgTaken; // proceso en foreground
+  uint8_t foreground; // proceso en foreground
   ListNode *currentProcess;
   ListNode *start; // lista ordenada por prioridades, los mas prioritarios primero
 } Scheduler;
@@ -41,7 +29,6 @@ Scheduler *scheduler;
 uint8_t firstProcess;
 uint32_t pid;
 ListNode *dummy;
-WaitingKeyboardList *waitingKBList;
 
 /*
 Un poco de background porque no me acordaba de nada: El Kernel en su main, luego de copiar todo el sampleCodeModule a la posicion 0x400000, primero inicializa el scheduler y luego crea el primer proceso que va a correr el main del sampleCodeModule. Este proceso es la shell, y es el unico proceso que se crea con prioridad = 1 dado que es la shell quien lo crea.
@@ -55,38 +42,20 @@ static void uselessProcess()
 
 void initScheduler()
 {
-  scheduler = (Scheduler *)alloc(sizeof(Scheduler));
+  scheduler = (Scheduler *)allocMemory(sizeof(Scheduler));
   scheduler->currentProcess = NULL;
   scheduler->quantum = QUANTUM - 1;
   scheduler->priorityQuantum = PRIORITY_QUANTUM;
   scheduler->start = NULL;
-  scheduler->fgTaken = 0;
+  scheduler->foreground = 0;
   pid = 1;
   firstProcess = 1;
 
-  // aloco memoria para el waitingKBList, y agrego la maxima cantidad de nodos en null a la lista.
-  // El ultimo nodo que agrego es un puntero a waitingKBList->current para que sea circular.
-  waitingKBList = (WaitingKeyboardList *)alloc(sizeof(WaitingKeyboardList));
-  waitingKBList->current = (WaitingNode *)alloc(sizeof(WaitingNode));
-  waitingKBList->current->process = NULL;
-  waitingKBList->current->next = NULL;
-  waitingKBList->tail = waitingKBList->current;
-  waitingKBList->size = 0;
-  WaitingNode *aux = waitingKBList->current;
-  for (int i = 0; i < MAX_WAITING_KEYBOARD; i++)
-  {
-    WaitingNode *newNode = (WaitingNode *)alloc(sizeof(WaitingNode));
-    newNode->process = NULL;
-    newNode->next = NULL;
-    aux->next = newNode;
-    aux = aux->next;
-  }
-  aux->next = waitingKBList->current;
-
-  uint64_t dummyMemory = (uint64_t)alloc(2048); /// 2048 bytes = 2K
+  uint64_t dummyMemory = (uint64_t)allocMemory(2048); /// 2048 bytes = 2K
 
   uint64_t sp = initProcess(dummyMemory + 2048, (uint64_t)&uselessProcess, 0, NULL);
-  dummy = (ListNode *)alloc(sizeof(ListNode));
+  dummy = (ListNode *)allocMemory(sizeof(ListNode));
+
   dummy->process.pid = 0;
   dummy->process.sp = sp;
   dummy->process.processMemory = dummyMemory;
@@ -95,7 +64,7 @@ void initScheduler()
   dummy->next = scheduler->start;
 }
 
-static char *copyString(char *destination, const char *source)
+static char *stringCopy(char *destination, const char *source)
 {
   if (destination == NULL)
     return NULL;
@@ -120,13 +89,13 @@ static ListNode *loadProcess(ListNode *node, uint32_t pid, uint8_t priority, int
   // Si la lista de procesos esta vacia, creo el nodo, inicio el proceso y retorno el nodo como inicio de la lista
   if (node == NULL)
   {
-    ListNode *newNode = (ListNode *)alloc(sizeof(ListNode));
+    ListNode *newNode = (ListNode *)allocMemory(sizeof(ListNode));
     newNode->process.pid = pid;
     newNode->process.pstate = 1;
     newNode->process.priority = priority;
     for (int i = 0; i < argc; i++)
-      copyString(newNode->process.args[i], args[i]);
-    uint64_t processMemory = (uint64_t)alloc(DEFAULT_PROGRAM_SIZE);
+      stringCopy(newNode->process.args[i], args[i]);
+    uint64_t processMemory = (uint64_t)allocMemory(DEFAULT_PROGRAM_SIZE);
 
     // initProcess es una funcion de assembler que inicia el proceso y devuelve el nuevo stackpointer. Los procesos por defecto son de 4K de tamanio.
     // todo: Usar y probar si anda forma de inicializar en una sola linea: ej newNode->p = {.sp = sp, etc.}
@@ -146,7 +115,7 @@ static ListNode *loadProcess(ListNode *node, uint32_t pid, uint8_t priority, int
 
   // O bien estoy en el final de la lista, o llegue a un nodo con menor prioridad, en ambos casos tengo que crear el proceso y encolarlo en este punto
 
-  ListNode *newNode = (ListNode *)alloc(sizeof(ListNode));
+  ListNode *newNode = (ListNode *)allocMemory(sizeof(ListNode));
 
   newNode->next = node->next;
   node->next = newNode;
@@ -156,8 +125,8 @@ static ListNode *loadProcess(ListNode *node, uint32_t pid, uint8_t priority, int
   newNode->process.priority = priority;
   // Copio los argumentos al nodo creado
   for (int i = 0; i < argc; i++)
-    copyString(newNode->process.args[i], args[i]);
-  uint64_t processMemory = (uint64_t)alloc(DEFAULT_PROGRAM_SIZE);
+    stringCopy(newNode->process.args[i], args[i]);
+  uint64_t processMemory = (uint64_t)allocMemory(DEFAULT_PROGRAM_SIZE);
   uint64_t sp = initProcess(processMemory + DEFAULT_PROGRAM_SIZE, ip, argc, newNode->process.args);
   newNode->process.sp = sp;
   newNode->process.bp = processMemory + DEFAULT_PROGRAM_SIZE - 1;
@@ -171,7 +140,7 @@ int createProcess(uint64_t ip, uint8_t priority, uint64_t argc, char argv[6][21]
 {
   // El scheduler pasa a obtener el foreground si la prioridad del nuevo proceso es maxima y tengo mas procesos ademas de la shell
   if (priority == 1 && pid > 1)
-    scheduler->fgTaken = 1;
+    scheduler->foreground = 1;
   int thisPid = pid;
   scheduler->start = loadProcess(scheduler->start, pid++, priority, argc, argv, ip);
   return thisPid;
@@ -247,8 +216,8 @@ static ListNode *deleteProcess(ListNode *node, uint32_t pid)
     ListNode *aux = node->next;
     deleteProcessFromSemaphores(pid);
     deleteProcessFromPipes(pid);
-    free((void *)node->process.processMemory);
-    free((void *)node);
+    freeMemory((void *)node->process.processMemory);
+    freeMemory((void *)node);
     return aux;
   }
 
@@ -259,7 +228,7 @@ static ListNode *deleteProcess(ListNode *node, uint32_t pid)
 void exitCurrentProcess()
 {
   if (scheduler->currentProcess->process.priority == 1)
-    scheduler->fgTaken = 0;
+    scheduler->foreground = 0;
 
   scheduler->start = deleteProcess(scheduler->start, scheduler->currentProcess->process.pid);
 }
@@ -307,42 +276,6 @@ static pcb *getPCB(ListNode *node, uint32_t pid)
   return getPCB(node->next, pid);
 }
 
-// Cambia la prioridad de un proceso y lo reordena en la lista de prioridades
-void changeProcessPriority(uint32_t pid, uint8_t newPriority)
-{
-  if (pid <= 1)
-  {
-    ncPrint("Cannot change shell priority\n");
-    return;
-  }
-  if (newPriority <= 1 || newPriority > 10)
-  {
-    ncPrint("Priority must be between 2 and 10");
-    return;
-  }
-
-  pcb *pidPCB = getPCB(scheduler->start, pid);
-  if (pidPCB == NULL)
-    return;
-
-  pidPCB->priority = newPriority;
-
-  ListNode *headPID = scheduler->start;
-  while (headPID->next->process.pid != pid)
-    headPID = headPID->next;
-
-  ListNode *process = headPID->next;
-  headPID->next = process->next;
-
-  headPID = scheduler->start;
-  while (headPID->next != NULL && newPriority >= headPID->next->process.priority)
-    headPID = headPID->next;
-
-  ListNode *aux = headPID->next;
-  headPID->next = process;
-  process->next = aux;
-}
-
 // Cambia el estado del proceso de ready a sleep o viceversa
 void changeProcessState(uint32_t pid)
 {
@@ -363,22 +296,10 @@ void changeProcessState(uint32_t pid)
     pidPCB->pstate = 1;
 }
 
-void waitForKeyboard()
+// Cambia la prioridad de un proceso y lo reordena en la lista de prioridades
+void changeProcessPriority(uint32_t pid, uint8_t newPriority)
 {
-  scheduler->currentProcess->process.pstate = 0;
-  waitingKBList->tail->process = &scheduler->currentProcess->process;
-  waitingKBList->tail = waitingKBList->tail->next;
-  waitingKBList->size++;
-  forceScheduler();
-}
-
-void awakeKeyboardQueue()
-{
-  if (waitingKBList->size == 0)
-    return;
-  waitingKBList->size--;
-  waitingKBList->current->process->pstate = 1;
-  waitingKBList->current = waitingKBList->current->next;
+  // todo: implementar
 }
 
 pcb *blockCurrentProcess()

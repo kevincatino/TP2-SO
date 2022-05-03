@@ -33,10 +33,6 @@ void changeProcessPriority(uint32_t pid, uint8_t newPriority);
 
 void changeProcessState(uint32_t pid);
 
-void waitForKeyboard();
-
-void awakeKeyboardQueue();
-
 pcb *blockCurrentProcess();
 
 uint32_t getCurrentPid();

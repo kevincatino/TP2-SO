@@ -13,6 +13,7 @@
         "cstdint": "c",
         "typeinfo": "c",
         "mem_manager_adt.h": "c",
-        "time.h": "c"
+        "time.h": "c",
+        "scheduler.h": "c"
     }
 }
