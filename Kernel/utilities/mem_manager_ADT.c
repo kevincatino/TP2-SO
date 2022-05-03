@@ -1,8 +1,8 @@
 // This is a personal academic project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
-#ifdef HEAP2
+// #ifdef HEAP2
 
-#include "../include/memoryManagerADT.h"
+#include "../include/mem_manager_ADT.h"
 #include <stdint.h>
 
 // Source: https://github.com/Infineon/freertos/blob/master/Source/portable/MemMang/heap_2.c
@@ -125,4 +125,4 @@ unsigned int usedHeap(MemoryManagerADT mm) {
   return heapSize() - heapLeft(mm);
 }
 
-#endif
+// #endif

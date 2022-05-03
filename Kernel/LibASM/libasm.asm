@@ -4,6 +4,8 @@ GLOBAL kbScanCode
 GLOBAL kbDetection
 GLOBAL asmGetByte
 GLOBAL get_regs
+GLOBAL initProcess
+GLOBAL forceScheduler
 
 
 section .text
@@ -56,7 +58,6 @@ kbDetection:
     ret
 
 
-
 asmGetByte:
     push rbp
     mov rbp, rsp
@@ -67,6 +68,48 @@ asmGetByte:
 	pop rbp
     ret
 
+
+initProcess: ; en rdi recibo la posicion del stackbase y en rsi recibo el puntero a la funcion del proceso
+	push rbp
+	push rsp
+	mov rax, rsp ; me guardo en rax el rsp actual
+	
+	mov rsp, rdi ; en rdi recibo el stackbase
+	sub rdi, 160 ; deja el rsp al final del "stackframe de int", para que luego se haga popstate + iretq y se popee en el orden correcto (160 = 20x8, un qword son 8 bytes)
+	mov rbp, rdi
+
+	; <-rsp (los primeros registros son para restaurarlos con el iretq)
+	push qword 0x0   ; ss
+	push qword rsp   ; rsp
+	push qword 0x202 ; rflags
+	push qword 0x8   ; cs
+	push qword rsi   ; rip
+	; registros generales que se restauran con el popState
+	push qword 0x1
+	push qword 0x2
+	push qword 0x3
+	push qword 0x4
+	push qword 0x5
+	push qword rdx ; argc (queda en rdi al hacer pop)
+	push qword rcx ; argv (queda en rsi al hacer pop)
+	push qword 0x6
+	push qword 0x7
+	push qword 0x8
+	push qword 0x9
+	push qword 0xA
+	push qword 0xB
+	push qword 0xC
+	push qword 0xD
+
+	mov rsp, rax ; restauro el rsp previo
+	mov rax, rbp ; en rax debe quedar el nuevo stack pointer desde el cual se restaura el contexto
+	pop rsp ; todo: revisar si esto esta de mas
+	pop rbp
+	ret
+
+forceScheduler:	
+	sti
+	int 20h
 
 ;-----------------------------------------------------------
 ; get_regs - utilizada en inforeg para devolver registros

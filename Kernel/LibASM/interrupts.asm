@@ -108,6 +108,8 @@ SECTION .text
 	mov al, 20h
 	out 20h, al
 
+	; todo: habria que llamar explicitamente al scheduler en cada interrupcion que ocurre
+
 	popState
 	pop rsp
 

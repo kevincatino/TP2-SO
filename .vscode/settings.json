@@ -12,6 +12,7 @@
         "*.tcc": "c",
         "cstdint": "c",
         "typeinfo": "c",
-        "mem_manager_adt.h": "c"
+        "mem_manager_adt.h": "c",
+        "time.h": "c"
     }
 }

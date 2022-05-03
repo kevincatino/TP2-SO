@@ -1,12 +1,22 @@
 #ifndef MEMORY_MANAGER_H
 #define MEMORY_MANAGER_H
 
-#include <stdlib.h>
+#define TOTAL_HEAP_SIZE 134217728 // 128MB
+#define BYTE_ALIGNMENT 8
+#define BYTE_ALIGNMENT_MASK 0x07
 
 typedef struct MemoryManagerCDT *MemoryManagerADT;
 
-MemoryManagerADT create_mem_manager(void *const restrict memoryForMemoryManager, void *const restrict managedMemory);
+MemoryManagerADT createMemManager(void *const memoryForMemoryManager, void *const managedMemory);
 
-void *mem_alloc(MemoryManagerADT const restrict memoryManager, const size_t memoryToAllocate);
+void *memoryAlloc(MemoryManagerADT const memoryManager, unsigned int memoryToAllocate);
+
+void memoryFree(MemoryManagerADT const memoryManager, void *memoryToFree);
+
+unsigned int heapSize();
+
+unsigned int heapLeft(MemoryManagerADT mm);
+
+unsigned int usedHeap(MemoryManagerADT mm);
 
 #endif
