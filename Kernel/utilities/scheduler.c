@@ -83,7 +83,7 @@ static char *stringCopy(char *destination, const char *source)
 }
 
 // Funcion auxiliar recursiva que crea y encola un proceso de prioridad 'priority'
-static ListNode *loadProcess(ListNode *node, uint32_t pid, uint8_t priority, int argc, char args[6][21], uint64_t ip)
+static ListNode *loadProcess(ListNode *node, uint32_t pid, uint8_t priority, int argc, char args[6][ARG_LENGTH], uint64_t ip)
 {
 
   // Si la lista de procesos esta vacia, creo el nodo, inicio el proceso y retorno el nodo como inicio de la lista
@@ -136,23 +136,30 @@ static ListNode *loadProcess(ListNode *node, uint32_t pid, uint8_t priority, int
 }
 
 // Crea un proceso de prioridad 'priority' con ciertos argumentos
-int createProcess(uint64_t ip, uint8_t priority, uint64_t argc, char argv[6][21])
+int createProcess(uint64_t ip, uint8_t priority, uint64_t argc, char argv[6][ARG_LENGTH])
 {
   // El scheduler pasa a obtener el foreground si la prioridad del nuevo proceso es maxima y tengo mas procesos ademas de la shell
   if (priority == 1 && pid > 1)
     scheduler->foreground = 1;
   int thisPid = pid;
   scheduler->start = loadProcess(scheduler->start, pid++, priority, argc, argv, ip);
+  ncPrint("Cree proceso\n");
+  while(1);
   return thisPid;
 }
 
+int createProcessForUser(uint64_t ip, uint8_t priority, uint64_t argc, char *argv) {
+    if (priority <= 1 || priority > 20)
+    return -1; // el usuario no puede crear procesos con prioridad menor a 2 o mayor a 20
+
+    return createProcessWrapper(ip, priority, argc, argv);
+}
+
+// Funcion auxiliar que copia el vector de argumentos a un arreglo
 int createProcessWrapper(uint64_t ip, uint8_t priority, uint64_t argc, char *argv)
 {
-  if (priority <= 1 || priority > 20)
-    return -1;
-
   int i = 0, j = 0;
-  char args[6][21];
+  char args[6][ARG_LENGTH];
   while (i < argc)
   {
     int k = 0;
@@ -214,8 +221,6 @@ static ListNode *deleteProcess(ListNode *node, uint32_t pid)
   {
     node->process.pstate = 2;
     ListNode *aux = node->next;
-    deleteProcessFromSemaphores(pid);
-    deleteProcessFromPipes(pid);
     freeMemory((void *)node->process.processMemory);
     freeMemory((void *)node);
     return aux;
@@ -241,27 +246,7 @@ void killPid(uint32_t pid)
 
 void printProcessList()
 {
-  ncPrint("Name    PID    Priority     SP          BP         Type         State\n");
-  ListNode *aux = scheduler->start;
-  while (aux != NULL)
-  {
-    ncPrint(aux->process.args[0]);
-    for (int i = ncStrlen(aux->process.args[0]); i < 9; i++)
-      ncPrint(" ");
-    ncPrintDec(aux->process.pid);
-    ncPrint("        ");
-    ncPrintDec(aux->process.priority);
-    ncPrint("        ");
-    ncPrintHex(aux->process.sp);
-    ncPrint("     ");
-    ncPrintHex(aux->process.bp);
-    ncPrint("     ");
-    ncPrint(aux->process.priority == 1 ? "Foreground" : "Background");
-    ncPrint("     ");
-    ncPrint(aux->process.pstate ? "Ready" : "Blocked");
-    ncNewline();
-    aux = aux->next;
-  }
+  // todo: implementar
 }
 
 // Retorna el contexto de un proceso a partir de su pid

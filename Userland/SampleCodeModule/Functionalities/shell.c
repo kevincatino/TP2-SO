@@ -77,7 +77,7 @@ int menuCommands(char *input)
         }
         else if (strCmp(command[0], "printmem") == 0)
         {
-            if (command[1] != '\0')
+            if (command[1] != 0)
             {
                 if (command[1][0] == '0' && (command[1][1] == 'x' || command[1][1] == 'X'))
                 {
@@ -112,7 +112,7 @@ int menuCommands(char *input)
         {
             clearScreen(GENERAL_SCREEN);
         }
-        else if (strCmp(command[0], "mmTest")){
+        else if (strCmp(command[0], "mmTest") == 0){
             memoryManagerTest();
         }
         else

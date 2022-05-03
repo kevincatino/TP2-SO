@@ -8,6 +8,7 @@
 
 #include <keyboardDriver.h>
 #include <clockDriver.h>
+#include <scheduler.h>
 
 
 
@@ -58,7 +59,12 @@ void * initializeKernelBinary() {
 
 
 int main() {
-	ncClear();
+	// ncClear();
+	
 	init_mem_manager(mem_for_mem_manager, managed_memory);
+
+	createProcessWrapper(sampleCodeModuleAddress, 1, 1, "Shell");
+	ncPrint("HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHa");
+	while(1);
 	return ((EntryPoint)sampleCodeModuleAddress)();
 }

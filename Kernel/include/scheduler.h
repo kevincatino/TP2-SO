@@ -3,9 +3,10 @@
 
 #include "../include/lib.h"
 #include "../include/the_memory_manager.h"
+#define ARG_LENGTH 25
 
 typedef struct pcb {
-  char args[6][21];
+  char args[6][25];
   uint32_t pid; // pid = 1 -> Proceso de la shell
   uint8_t pstate; // por defecto es 1 que significa 'ready'
   uint8_t priority; // mas bajo -> mayor prioridad. La shell es el unico con prioridad = 1. El user tiene un rango de 2 a 10.
@@ -19,9 +20,11 @@ void initScheduler();
 
 uint64_t switchProcess(uint64_t sp);
 
-int createProcess(uint64_t ip, uint8_t priority, uint64_t argc, char args[6][21]);
+int createProcess(uint64_t ip, uint8_t priority, uint64_t argc, char args[6][ARG_LENGTH]);
 
 int createProcessWrapper(uint64_t ip, uint8_t priority, uint64_t argc, char * argv);
+
+int createProcessForUser(uint64_t ip, uint8_t priority, uint64_t argc, char *argv);
 
 void exitCurrentProcess();
 
