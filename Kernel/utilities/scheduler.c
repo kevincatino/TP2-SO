@@ -35,9 +35,13 @@ Un poco de background porque no me acordaba de nada: El Kernel en su main, luego
 */
 
 
-static void uselessProcess()
+static void cursorProcess()
 {
-  while (1);
+  while(1) {
+    if (ticks_elapsed()%10 == 0) {
+      displayCursor();
+    }
+  }
 }
 
 void initScheduler()
@@ -53,15 +57,18 @@ void initScheduler()
 
   uint64_t dummyMemory = (uint64_t)allocMemory(2048); /// 2048 bytes = 2K
 
-  uint64_t sp = initProcess(dummyMemory + 2048, (uint64_t)&uselessProcess, 0, NULL);
+  uint64_t sp = initProcess(dummyMemory + 2048, (uint64_t)&cursorProcess, 0, NULL);
   dummy = (ListNode *)allocMemory(sizeof(ListNode));
+
+  scheduler->start = dummy; // Arrancamos con el proceso dummy
 
   dummy->process.pid = 0;
   dummy->process.sp = sp;
   dummy->process.processMemory = dummyMemory;
   dummy->process.pstate = 1;
   dummy->process.priority = 1;
-  dummy->next = scheduler->start;
+  dummy->next = NULL;
+
 }
 
 static char *stringCopy(char *destination, const char *source)
@@ -97,12 +104,14 @@ static ListNode *loadProcess(ListNode *node, uint32_t pid, uint8_t priority, int
       stringCopy(newNode->process.args[i], args[i]);
     uint64_t processMemory = (uint64_t)allocMemory(DEFAULT_PROGRAM_SIZE);
 
+
     // initProcess es una funcion de assembler que inicia el proceso y devuelve el nuevo stackpointer. Los procesos por defecto son de 4K de tamanio.
     // todo: Usar y probar si anda forma de inicializar en una sola linea: ej newNode->p = {.sp = sp, etc.}
     uint64_t sp = initProcess(processMemory + DEFAULT_PROGRAM_SIZE, ip, argc, newNode->process.args);
     newNode->process.sp = sp;
     newNode->process.bp = processMemory + DEFAULT_PROGRAM_SIZE - 1;
     newNode->process.processMemory = processMemory;
+ 
     return newNode;
   }
 
@@ -139,12 +148,14 @@ static ListNode *loadProcess(ListNode *node, uint32_t pid, uint8_t priority, int
 int createProcess(uint64_t ip, uint8_t priority, uint64_t argc, char argv[6][ARG_LENGTH])
 {
   // El scheduler pasa a obtener el foreground si la prioridad del nuevo proceso es maxima y tengo mas procesos ademas de la shell
+  
   if (priority == 1 && pid > 1)
     scheduler->foreground = 1;
   int thisPid = pid;
-  scheduler->start = loadProcess(scheduler->start, pid++, priority, argc, argv, ip);
-  ncPrint("Cree proceso\n");
-  while(1);
+ scheduler->start = loadProcess(scheduler->start, pid++, priority, argc, argv, ip);
+
+
+
   return thisPid;
 }
 
@@ -180,6 +191,9 @@ int createProcessWrapper(uint64_t ip, uint8_t priority, uint64_t argc, char *arg
 // Es la funcion llamada desde assembler cada vez que ocurre una interrupcion de cualquier tipo (incluyendo timer tick). Recibe el stack pointer para saber desde donde retomar luego el contexto
 uint64_t switchProcess(uint64_t sp)
 {
+  if (scheduler->start == NULL)
+    return 0;
+
 
   // Para el primer proceso no actualizamos el sp, usamos el hardcodeado
   if (firstProcess)
@@ -188,6 +202,8 @@ uint64_t switchProcess(uint64_t sp)
     scheduler->currentProcess = scheduler->start;
     return scheduler->start->process.sp;
   }
+
+
   // Si faltan ticks por correr, disminuimos el quantum y seguimos en el mismo proceso
   if (scheduler->quantum > 0)
   {
@@ -201,12 +217,19 @@ uint64_t switchProcess(uint64_t sp)
   scheduler->quantum = QUANTUM - 1;
 
   // guardar el sp del proceso actual en su PCB. Al hacer context switch tiene que reanudar desde ese mismo punto
+  
+
   scheduler->currentProcess->process.sp = sp;
 
-  if (scheduler->currentProcess->next == NULL)
+  
+
+  if (scheduler->currentProcess->next == NULL) {
     scheduler->currentProcess = scheduler->start;
-  else
+  }
+  else {
     scheduler->currentProcess = scheduler->currentProcess->next;
+  }
+  
 
 
   return scheduler->currentProcess->process.sp;

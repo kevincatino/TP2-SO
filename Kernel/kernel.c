@@ -63,6 +63,8 @@ int main() {
 	
 	init_mem_manager(mem_for_mem_manager, managed_memory);
 
+	initScheduler();
+
 	createProcessWrapper(sampleCodeModuleAddress, 1, 1, "Shell");
 	ncPrint("HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHa");
 	while(1);

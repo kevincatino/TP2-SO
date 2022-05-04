@@ -22,6 +22,7 @@ EXTERN irqDispatcher
 EXTERN exceptionDispatcher
 EXTERN sysCallDispatcher
 EXTERN getStackBase
+EXTERN switchProcess
 
 SECTION .text
 
@@ -98,7 +99,7 @@ SECTION .text
 %endmacro
 
 %macro irqHandlerMaster 1
-	push rsp
+	cli
 	pushState
 
 	mov rdi, %1 ; pasaje de parametro
@@ -108,11 +109,17 @@ SECTION .text
 	mov al, 20h
 	out 20h, al
 
-	; todo: habria que llamar explicitamente al scheduler en cada interrupcion que ocurre
+	; timertick
+	mov rdi, rsp ; pasa el rsp por parametro para actualizar el PCB del proceso actual y poder retomar luego
+	call switchProcess ; switchProcess me retorna en rax el nuevo stackbase al que debo cambiar
+	cmp rax, 0
+	je .end
+	mov rsp, rax
+
+	.end
 
 	popState
-	pop rsp
-
+	sti
 	iretq
 %endmacro
 

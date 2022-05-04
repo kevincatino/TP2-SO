@@ -23,12 +23,26 @@ static uint8_t * currentVideo = (uint8_t*)0xB8000;
 static const uint32_t width = 80;
 static const uint32_t height = 25 ;
 static int screenInUse = 0;
+static int cursor = 0;
 
  
-
+void displayCursor() {
+	if (!cursor) {
+		*currentVideo = '|';
+		cursor = 1;
+	}
+	else 
+		{
+			*currentVideo = ' ';
+			cursor = 0;
+		}
+}
 
 
 void ncPrint(const char * string) {
+	if (cursor) {
+
+	}
 	int i;
 	for (i = 0; string[i] != 0; i++) {
 		ncPrintChar(string[i]);
