@@ -4,7 +4,7 @@
 #include "../include/time.h"
 #include <scheduler.h>
 
-#define QUANTUM 1
+#define QUANTUM 2
 #define PRIORITY_QUANTUM 5
 #define MAX_WAITING_KEYBOARD 10
 #define DEFAULT_PROGRAM_SIZE 4096
@@ -18,9 +18,6 @@ typedef struct ListNode
 
 typedef struct Scheduler
 {
-  uint32_t quantum;
-  uint32_t priorityQuantum;
-  uint8_t foreground; // proceso en foreground
   ListNode *currentProcess;
   ListNode *start; // lista ordenada por prioridades, los mas prioritarios primero
 } Scheduler;
@@ -38,37 +35,22 @@ Un poco de background porque no me acordaba de nada: El Kernel en su main, luego
 static void cursorProcess()
 {
   while(1) {
-    if (ticks_elapsed()%10 == 0) {
+    if (ticks_elapsed()% 5 == 0) {
       displayCursor();
+      _hlt();
     }
   }
 }
 
-void initScheduler()
-{
-  scheduler = (Scheduler *)allocMemory(sizeof(Scheduler));
-  scheduler->currentProcess = NULL;
-  scheduler->quantum = QUANTUM - 1;
-  scheduler->priorityQuantum = PRIORITY_QUANTUM;
-  scheduler->start = NULL;
-  scheduler->foreground = 0;
-  pid = 1;
-  firstProcess = 1;
-
-  uint64_t dummyMemory = (uint64_t)allocMemory(2048); /// 2048 bytes = 2K
-
-  uint64_t sp = initProcess(dummyMemory + 2048, (uint64_t)&cursorProcess, 0, NULL);
-  dummy = (ListNode *)allocMemory(sizeof(ListNode));
-
-  scheduler->start = dummy; // Arrancamos con el proceso dummy
-
-  dummy->process.pid = 0;
-  dummy->process.sp = sp;
-  dummy->process.processMemory = dummyMemory;
-  dummy->process.pstate = 1;
-  dummy->process.priority = 1;
-  dummy->next = NULL;
-
+static int getQuantum(uint8_t priority) {
+  switch(priority) {
+    case 1: return 5;
+    case 2: return 4;
+    case 3: return 3;
+    case 4: return 2;
+    case 5: return 1;
+  }
+  return 1;
 }
 
 static char *stringCopy(char *destination, const char *source)
@@ -89,6 +71,35 @@ static char *stringCopy(char *destination, const char *source)
   return ptr;
 }
 
+void initScheduler()
+{
+  scheduler = (Scheduler *)allocMemory(sizeof(Scheduler));
+  scheduler->currentProcess = NULL;
+  scheduler->start = NULL;
+  pid = 1;
+  firstProcess = 1;
+
+  uint64_t dummyMemory = (uint64_t)allocMemory(2048); /// 2048 bytes = 2K
+
+  uint64_t sp = initProcess(dummyMemory + 2048, (uint64_t)&cursorProcess, 0, NULL);
+  dummy = (ListNode *)allocMemory(sizeof(ListNode));
+
+  scheduler->start = dummy; // Arrancamos con el proceso dummy
+
+  dummy->process.pid = 0;
+  dummy->process.sp = sp;
+  stringCopy(dummy->process.args[0], "cursor");
+  dummy->process.processMemory = dummyMemory;
+  dummy->process.pstate = 1;
+  dummy->process.priority = 2;
+  dummy->process.quantum = getQuantum(dummy->process.priority);
+  dummy->next = NULL;
+}
+
+
+
+
+
 // Funcion auxiliar recursiva que crea y encola un proceso de prioridad 'priority'
 static ListNode *loadProcess(ListNode *node, uint32_t pid, uint8_t priority, int argc, char args[6][ARG_LENGTH], uint64_t ip)
 {
@@ -100,10 +111,10 @@ static ListNode *loadProcess(ListNode *node, uint32_t pid, uint8_t priority, int
     newNode->process.pid = pid;
     newNode->process.pstate = 1;
     newNode->process.priority = priority;
+    newNode->process.quantum = getQuantum(priority);
     for (int i = 0; i < argc; i++)
       stringCopy(newNode->process.args[i], args[i]);
     uint64_t processMemory = (uint64_t)allocMemory(DEFAULT_PROGRAM_SIZE);
-
 
     // initProcess es una funcion de assembler que inicia el proceso y devuelve el nuevo stackpointer. Los procesos por defecto son de 4K de tamanio.
     // todo: Usar y probar si anda forma de inicializar en una sola linea: ej newNode->p = {.sp = sp, etc.}
@@ -132,6 +143,7 @@ static ListNode *loadProcess(ListNode *node, uint32_t pid, uint8_t priority, int
   newNode->process.pid = pid;
   newNode->process.pstate = 1; // por defecto pstate = 1 = ready
   newNode->process.priority = priority;
+  newNode->process.quantum = getQuantum(priority);
   // Copio los argumentos al nodo creado
   for (int i = 0; i < argc; i++)
     stringCopy(newNode->process.args[i], args[i]);
@@ -148,13 +160,8 @@ static ListNode *loadProcess(ListNode *node, uint32_t pid, uint8_t priority, int
 int createProcess(uint64_t ip, uint8_t priority, uint64_t argc, char argv[6][ARG_LENGTH])
 {
   // El scheduler pasa a obtener el foreground si la prioridad del nuevo proceso es maxima y tengo mas procesos ademas de la shell
-  
-  if (priority == 1 && pid > 1)
-    scheduler->foreground = 1;
   int thisPid = pid;
  scheduler->start = loadProcess(scheduler->start, pid++, priority, argc, argv, ip);
-
-
 
   return thisPid;
 }
@@ -195,7 +202,7 @@ uint64_t switchProcess(uint64_t sp)
     return 0;
 
 
-  // Para el primer proceso no actualizamos el sp, usamos el hardcodeado
+  // Para el primer proceso usamos el stack pointer hardcodeado porque no hay punto del cual resumir
   if (firstProcess)
   {
     firstProcess = 0;
@@ -203,18 +210,17 @@ uint64_t switchProcess(uint64_t sp)
     return scheduler->start->process.sp;
   }
 
-
   // Si faltan ticks por correr, disminuimos el quantum y seguimos en el mismo proceso
-  if (scheduler->quantum > 0)
+  if (scheduler->currentProcess->process.quantum > 0)
   {
-    scheduler->quantum--;
+    scheduler->currentProcess->process.quantum--;
     return 0;
   }
 
   // Si llegue aca, el proceso ya termino de ejecutar su quantum completo y tengo que elegir un nuevo proceso a correr
 
   // Como ya terminó su quantum, lo reiniciamos
-  scheduler->quantum = QUANTUM - 1;
+  scheduler->currentProcess->process.quantum = getQuantum(scheduler->currentProcess->process.priority);
 
   // guardar el sp del proceso actual en su PCB. Al hacer context switch tiene que reanudar desde ese mismo punto
   
@@ -255,9 +261,6 @@ static ListNode *deleteProcess(ListNode *node, uint32_t pid)
 
 void exitCurrentProcess()
 {
-  if (scheduler->currentProcess->process.priority == 1)
-    scheduler->foreground = 0;
-
   scheduler->start = deleteProcess(scheduler->start, scheduler->currentProcess->process.pid);
 }
 

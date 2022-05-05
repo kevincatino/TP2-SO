@@ -66,7 +66,8 @@ int main() {
 	initScheduler();
 
 	createProcessWrapper(sampleCodeModuleAddress, 1, 1, "Shell");
-	ncPrint("HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHa");
+
 	while(1);
-	return ((EntryPoint)sampleCodeModuleAddress)();
+
+	return 0;
 }

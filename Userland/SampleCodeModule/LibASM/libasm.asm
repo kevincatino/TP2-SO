@@ -15,7 +15,8 @@ GLOBAL div_zero
 GLOBAL throwInvalidOpcode
 GLOBAL sys_alloc
 GLOBAL sys_free
-
+GLOBAL sys_create_process
+GLOBAL sys_get_ticks
 
 ;-----------------------------------------------------------
 ; sys_read - lee de file descriptor
@@ -244,6 +245,32 @@ sys_free:
     push rbx
 
     mov rax, 14  
+    int 80h
+
+    pop rbx
+    mov rsp, rbp     
+    pop rbp     
+    ret
+
+sys_create_process:
+    push rbp     
+    mov rbp, rsp     
+    push rbx
+
+    mov rax, 15  
+    int 80h
+
+    pop rbx
+    mov rsp, rbp     
+    pop rbp     
+    ret
+
+sys_get_ticks:
+    push rbp     
+    mov rbp, rsp     
+    push rbx
+
+    mov rax, 16  
     int 80h
 
     pop rbx

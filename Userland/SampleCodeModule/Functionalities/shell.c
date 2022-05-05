@@ -1,4 +1,5 @@
 #include <shell.h>
+#include <libc.h>
 
 #define LOAD_GAME 0
 #define CONTINUE_GAME 1
@@ -9,8 +10,22 @@ int gameCommands(char *input);
 void initializeAllGames();
 void memoryManagerTest();
 
+void loop() {
+    static int prev=0;
+    while(1) {
+        int ticks = sys_get_ticks();
+        if(ticks != prev && ticks %10 == 0) {
+            print("A");
+            prev = ticks;
+        }
+        
+            
+    } 
+}
+
 void initializeShell()
 {
+    //sys_create_process(&loop, 2, 1, "loop");
     initialMessage();
     generalShell();
 }
@@ -34,6 +49,7 @@ void generalShell()
     while (shellActivated)
     {
         printUser();
+        
         readInput(input, MAX_BUFFER, GENERAL_SCREEN);
         print("\n");
         shellActivated = menuCommands(input);

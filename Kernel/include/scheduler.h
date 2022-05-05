@@ -12,6 +12,7 @@ typedef struct pcb {
   uint8_t priority; // mas bajo -> mayor prioridad. La shell es el unico con prioridad = 1. El user tiene un rango de 2 a 10.
   uint64_t sp; // stack pointer
   uint64_t bp; // base pointer
+  uint8_t quantum;
   uint64_t processMemory;
 } pcb;
 
