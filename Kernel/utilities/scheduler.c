@@ -15,12 +15,13 @@ typedef struct ListNode
   struct ListNode *next;
 } ListNode;
 
-
 typedef struct Scheduler
 {
   ListNode *currentProcess;
   ListNode *start; // lista ordenada por prioridades, los mas prioritarios primero
 } Scheduler;
+
+// start: cursorProcess -> shellProcess -> process3
 
 Scheduler *scheduler;
 uint8_t firstProcess;
@@ -31,24 +32,32 @@ ListNode *dummy;
 Un poco de background porque no me acordaba de nada: El Kernel en su main, luego de copiar todo el sampleCodeModule a la posicion 0x400000, primero inicializa el scheduler y luego crea el primer proceso que va a correr el main del sampleCodeModule. Este proceso es la shell, y es el unico proceso que se crea con prioridad = 1 dado que es la shell quien lo crea.
 */
 
-
 static void cursorProcess()
 {
-  while(1) {
-    if (ticks_elapsed()% 5 == 0) {
+  while (1)
+  {
+    if (ticks_elapsed() % 5 == 0)
+    {
       displayCursor();
       _hlt();
     }
   }
 }
 
-static int getQuantum(uint8_t priority) {
-  switch(priority) {
-    case 1: return 5;
-    case 2: return 4;
-    case 3: return 3;
-    case 4: return 2;
-    case 5: return 1;
+static int getQuantum(uint8_t priority)
+{
+  switch (priority)
+  {
+  case 1:
+    return 5;
+  case 2:
+    return 4;
+  case 3:
+    return 3;
+  case 4:
+    return 2;
+  case 5:
+    return 1;
   }
   return 1;
 }
@@ -71,6 +80,20 @@ static char *stringCopy(char *destination, const char *source)
   return ptr;
 }
 
+static void setBlockPriority(pcb *block, uint8_t newPriority)
+{
+  block->priority = newPriority;
+  block->quantum = getQuantum(newPriority);
+}
+
+static int8_t userValidPid(int8_t pid) {
+  return pid>=2;
+}
+
+static int8_t userValidPriority(int8_t priority) {
+  return priority >= 2 && priority <=5;
+}
+
 void initScheduler()
 {
   scheduler = (Scheduler *)allocMemory(sizeof(Scheduler));
@@ -91,14 +114,9 @@ void initScheduler()
   stringCopy(dummy->process.args[0], "cursor");
   dummy->process.processMemory = dummyMemory;
   dummy->process.pstate = 1;
-  dummy->process.priority = 2;
-  dummy->process.quantum = getQuantum(dummy->process.priority);
+  setBlockPriority(&dummy->process, 2);
   dummy->next = NULL;
 }
-
-
-
-
 
 // Funcion auxiliar recursiva que crea y encola un proceso de prioridad 'priority'
 static ListNode *loadProcess(ListNode *node, uint32_t pid, uint8_t priority, int argc, char args[6][ARG_LENGTH], uint64_t ip)
@@ -122,12 +140,12 @@ static ListNode *loadProcess(ListNode *node, uint32_t pid, uint8_t priority, int
     newNode->process.sp = sp;
     newNode->process.bp = processMemory + DEFAULT_PROGRAM_SIZE - 1;
     newNode->process.processMemory = processMemory;
- 
+
     return newNode;
   }
 
   // Llamada recursiva: si estoy en un nodo de mayor prioridad que 'priority', tengo que encolar el proceso mas adelante
-  if (node->next != NULL && priority >= node->next->process.priority)
+  if (node->next != NULL)
   {
     node->next = loadProcess(node->next, pid, priority, argc, args, ip);
     return node;
@@ -157,24 +175,25 @@ static ListNode *loadProcess(ListNode *node, uint32_t pid, uint8_t priority, int
 }
 
 // Crea un proceso de prioridad 'priority' con ciertos argumentos
-int createProcess(uint64_t ip, uint8_t priority, uint64_t argc, char argv[6][ARG_LENGTH])
+uint32_t createProcess(uint64_t ip, uint8_t priority, uint64_t argc, char argv[6][ARG_LENGTH])
 {
   // El scheduler pasa a obtener el foreground si la prioridad del nuevo proceso es maxima y tengo mas procesos ademas de la shell
   int thisPid = pid;
- scheduler->start = loadProcess(scheduler->start, pid++, priority, argc, argv, ip);
+  scheduler->start = loadProcess(scheduler->start, pid++, priority, argc, argv, ip);
 
   return thisPid;
 }
 
-int createProcessForUser(uint64_t ip, uint8_t priority, uint64_t argc, char *argv) {
-    if (priority <= 1 || priority > 20)
+uint32_t createProcessForUser(uint64_t ip, uint8_t priority, uint64_t argc, char *argv)
+{
+  if (!userValidPriority(priority))
     return -1; // el usuario no puede crear procesos con prioridad menor a 2 o mayor a 20
 
-    return createProcessWrapper(ip, priority, argc, argv);
+  return createProcessWrapper(ip, priority, argc, argv);
 }
 
 // Funcion auxiliar que copia el vector de argumentos a un arreglo
-int createProcessWrapper(uint64_t ip, uint8_t priority, uint64_t argc, char *argv)
+uint32_t createProcessWrapper(uint64_t ip, uint8_t priority, uint64_t argc, char *argv)
 {
   int i = 0, j = 0;
   char args[6][ARG_LENGTH];
@@ -198,9 +217,9 @@ int createProcessWrapper(uint64_t ip, uint8_t priority, uint64_t argc, char *arg
 // Es la funcion llamada desde assembler cada vez que ocurre una interrupcion de cualquier tipo (incluyendo timer tick). Recibe el stack pointer para saber desde donde retomar luego el contexto
 uint64_t switchProcess(uint64_t sp)
 {
+
   if (scheduler->start == NULL)
     return 0;
-
 
   // Para el primer proceso usamos el stack pointer hardcodeado porque no hay punto del cual resumir
   if (firstProcess)
@@ -211,9 +230,14 @@ uint64_t switchProcess(uint64_t sp)
   }
 
   // Si faltan ticks por correr, disminuimos el quantum y seguimos en el mismo proceso
-  if (scheduler->currentProcess->process.quantum > 0)
+  if (scheduler->currentProcess->process.quantum > 0 && scheduler->currentProcess->process.pstate == 1)
   {
     scheduler->currentProcess->process.quantum--;
+    // ncPrint(" ");
+    ncPrintDec(scheduler->currentProcess->process.pid);
+    // ncPrint("P");
+    // ncPrintDec(scheduler->currentProcess->process.priority);
+    // ncPrint(" ");
     return 0;
   }
 
@@ -223,20 +247,26 @@ uint64_t switchProcess(uint64_t sp)
   scheduler->currentProcess->process.quantum = getQuantum(scheduler->currentProcess->process.priority);
 
   // guardar el sp del proceso actual en su PCB. Al hacer context switch tiene que reanudar desde ese mismo punto
-  
 
   scheduler->currentProcess->process.sp = sp;
 
-  
+  int foundNext = 0;
 
-  if (scheduler->currentProcess->next == NULL) {
-    scheduler->currentProcess = scheduler->start;
-  }
-  else {
-    scheduler->currentProcess = scheduler->currentProcess->next;
-  }
-  
+  // Buscamos el proximo proceso ready (si el siguiente es la shell o el cursor, ni siquiera chequeamos si esta ready o no, siempre lo estan)
+  while (!foundNext)
+  {
+    if (scheduler->currentProcess->next == NULL)
+    {
+      scheduler->currentProcess = scheduler->start;
+    }
+    else
+    {
+      scheduler->currentProcess = scheduler->currentProcess->next;
+    }
 
+    if (scheduler->currentProcess->process.pid < 2 || scheduler->currentProcess->process.pstate == 1)
+      foundNext = 1;
+  }
 
   return scheduler->currentProcess->process.sp;
 }
@@ -310,13 +340,22 @@ void changeProcessState(uint32_t pid)
 // Cambia la prioridad de un proceso y lo reordena en la lista de prioridades
 void changeProcessPriority(uint32_t pid, uint8_t newPriority)
 {
-  // todo: implementar
+  pcb *block = getPCB(scheduler->start, pid);
+  setBlockPriority(block, newPriority);
 }
 
-pcb *blockCurrentProcess()
-{
-  scheduler->currentProcess->process.pstate = 0;
-  return &scheduler->currentProcess->process;
+void changeProcessPriorityForUser(uint32_t pid, uint8_t newPriority) {
+  if (!userValidPriority(newPriority))
+      return;
+
+  changeProcessPriority(pid,newPriority);
+}
+
+void changeProcessStateForUser(uint32_t pid) {
+  if (!userValidPid(pid))
+    return;
+
+    changeProcessState(pid);
 }
 
 uint32_t getCurrentPid()

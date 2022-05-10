@@ -38,7 +38,8 @@ extern uint64_t sys_get_milli_seconds(uint64_t time);
 extern void *sys_alloc(unsigned int to_alloc);
 extern void sys_free(void *to_free);
 extern int sys_create_process(uint64_t ip, uint8_t priority, uint64_t argc, char *argv);
-extern int sys_get_ticks();
+extern int sys_change_process_priority(uint32_t pid, uint8_t newPriority);
+extern int sys_change_process_state(uint32_t pid);
 
 extern void get_regs();
 

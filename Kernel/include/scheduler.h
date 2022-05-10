@@ -21,11 +21,11 @@ void initScheduler();
 
 uint64_t switchProcess(uint64_t sp);
 
-int createProcess(uint64_t ip, uint8_t priority, uint64_t argc, char args[6][ARG_LENGTH]);
+uint32_t  createProcess(uint64_t ip, uint8_t priority, uint64_t argc, char args[6][ARG_LENGTH]);
 
-int createProcessWrapper(uint64_t ip, uint8_t priority, uint64_t argc, char * argv);
+uint32_t createProcessWrapper(uint64_t ip, uint8_t priority, uint64_t argc, char * argv);
 
-int createProcessForUser(uint64_t ip, uint8_t priority, uint64_t argc, char *argv);
+uint32_t createProcessForUser(uint64_t ip, uint8_t priority, uint64_t argc, char *argv);
 
 void exitCurrentProcess();
 
@@ -37,7 +37,9 @@ void changeProcessPriority(uint32_t pid, uint8_t newPriority);
 
 void changeProcessState(uint32_t pid);
 
-pcb *blockCurrentProcess();
+void changeProcessPriorityForUser(uint32_t pid, uint8_t newPriority);
+
+void changeProcessStateForUser(uint32_t pid);
 
 uint32_t getCurrentPid();
 

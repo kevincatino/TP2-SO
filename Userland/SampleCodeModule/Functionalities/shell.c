@@ -15,17 +15,15 @@ void loop() {
     while(1) {
         int ticks = sys_get_ticks();
         if(ticks != prev && ticks %10 == 0) {
-            print("A");
             prev = ticks;
         }
-        
             
     } 
 }
 
 void initializeShell()
 {
-    //sys_create_process(&loop, 2, 1, "loop");
+    sys_create_process(&loop, 2, 1, "loop");
     initialMessage();
     generalShell();
 }
@@ -328,5 +326,5 @@ void updateRegs(uint64_t *registers)
 }
 
 void memoryManagerTest() {
-    print("Aca se correria el test de memoria\n");
+    sys_change_process_priority(2, 5);
 }

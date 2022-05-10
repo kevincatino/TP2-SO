@@ -17,6 +17,8 @@ GLOBAL sys_alloc
 GLOBAL sys_free
 GLOBAL sys_create_process
 GLOBAL sys_get_ticks
+GLOBAL sys_change_process_priority
+GLOBAL sys_change_process_state
 
 ;-----------------------------------------------------------
 ; sys_read - lee de file descriptor
@@ -271,6 +273,32 @@ sys_get_ticks:
     push rbx
 
     mov rax, 16  
+    int 80h
+
+    pop rbx
+    mov rsp, rbp     
+    pop rbp     
+    ret
+
+sys_change_process_priority:
+    push rbp     
+    mov rbp, rsp     
+    push rbx
+
+    mov rax, 17  
+    int 80h
+
+    pop rbx
+    mov rsp, rbp     
+    pop rbp     
+    ret
+
+sys_change_process_state:
+    push rbp     
+    mov rbp, rsp     
+    push rbx
+
+    mov rax, 18  
     int 80h
 
     pop rbx

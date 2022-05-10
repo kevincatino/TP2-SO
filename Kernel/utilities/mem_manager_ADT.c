@@ -79,7 +79,7 @@ void *memoryAlloc(MemoryManagerADT const memoryManager, unsigned int memoryToAll
     if (block == &memoryManager->end)
       return NULL;
 
-    blockToReturn = (void *) (((uint8_t *) previousBlock->pnextFreeBlock) + STRUCT_SIZE);
+    blockToReturn = (void *) (((uint8_t *) block) + STRUCT_SIZE);
 
     previousBlock->pnextFreeBlock = block->pnextFreeBlock;
 
