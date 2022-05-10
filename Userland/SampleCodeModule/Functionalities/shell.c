@@ -13,11 +13,19 @@ void memoryManagerTest();
 
 void loop() {
     static int prev=0;
+    static int hola = 0;
     while(1) {
         int ticks = sys_get_ticks();
         if(ticks != prev && ticks %10 == 0) {
             prev = ticks;
+            hola++;
+            if (hola >= 10) {
+                // print("Exiteo");
+                sys_exit();
+            }
+                
         }
+        
             
     } 
 }

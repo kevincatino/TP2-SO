@@ -19,6 +19,7 @@ GLOBAL sys_create_process
 GLOBAL sys_get_ticks
 GLOBAL sys_change_process_priority
 GLOBAL sys_change_process_state
+GLOBAL sys_exit
 
 ;-----------------------------------------------------------
 ; sys_read - lee de file descriptor
@@ -305,6 +306,21 @@ sys_change_process_state:
     mov rsp, rbp     
     pop rbp     
     ret
+
+sys_exit:
+    push rbp     
+    mov rbp, rsp     
+    push rbx
+
+    mov rax, 19  
+    int 80h
+
+    pop rbx
+    mov rsp, rbp     
+    pop rbp     
+    ret
+
+
 
 ;-----------------------------------------------------------
 ; div_zero - Excepcion de dividir por cero
