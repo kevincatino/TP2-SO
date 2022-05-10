@@ -5,6 +5,7 @@
 #include <moduleLoader.h>
 #include <naiveConsole.h>
 #include <the_memory_manager.h>
+#include <interrupts.h>
 
 #include <keyboardDriver.h>
 #include <clockDriver.h>
@@ -52,14 +53,17 @@ void * initializeKernelBinary() {
 
 	clearBSS(&bss, &endOfKernel - &bss);
 
-	load_idt();
+
 	
 	return getStackBase();
 }
 
 
 int main() {
-	// ncClear();
+
+	_cli();
+
+	load_idt();
 	
 	init_mem_manager(mem_for_mem_manager, managed_memory);
 
@@ -67,7 +71,8 @@ int main() {
 
 	createProcessWrapper(sampleCodeModuleAddress, 1, 1, "Shell");
 
-	while(1);
+	_sti();
+
 
 	return 0;
 }

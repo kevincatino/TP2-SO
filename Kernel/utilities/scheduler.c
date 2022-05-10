@@ -192,7 +192,7 @@ uint32_t createProcessForUser(uint64_t ip, uint8_t priority, uint64_t argc, char
   return createProcessWrapper(ip, priority, argc, argv);
 }
 
-// Funcion auxiliar que copia el vector de argumentos a un arreglo
+// Funcion auxiliar que copia el vector de argumentos a un arreglo (no hacemos malloc, hay limitaciones en la longitud y cantidad de argumentos)
 uint32_t createProcessWrapper(uint64_t ip, uint8_t priority, uint64_t argc, char *argv)
 {
   int i = 0, j = 0;
@@ -324,6 +324,7 @@ void changeProcessState(uint32_t pid)
     return;
 
   pcb *pidPCB = getPCB(scheduler->start, pid);
+  
   if (pidPCB == NULL)
     return;
 

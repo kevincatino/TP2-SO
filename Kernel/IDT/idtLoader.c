@@ -22,7 +22,7 @@ static void setup_IDT_entry (int index, uint64_t offset);
 
 void load_idt() {
 
-  _cli();   // Se deshabilitan interrupciones mientras cargamos la IDT
+  // _cli();   // Se deshabilitan interrupciones mientras cargamos la IDT
 
   setup_IDT_entry (0x80, (uint64_t)&_sysCallHandler);     // Handler para la llamada de syscall.
   setup_IDT_entry (0x00, (uint64_t)&_exception0Handler);  // Handler para la zero division
@@ -36,7 +36,7 @@ void load_idt() {
 	picMasterMask(0xFC); 
 	picSlaveMask(0xFF);
         
-	_sti();
+	// _sti();
 }
 
 static void setup_IDT_entry (int index, uint64_t offset) {

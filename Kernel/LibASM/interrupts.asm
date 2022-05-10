@@ -221,7 +221,7 @@ _sysCallHandler:
 	out 20h, al
 	pop rax
 	
-	popStateNoRax
+	popStateNoRax ; ya desde antes haciamos push/popStateNoRax asi que lo dejamos igual
 	iretq
 
 

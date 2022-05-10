@@ -101,9 +101,9 @@ initProcess: ; en rdi recibo la posicion del stackbase y en rsi recibo el punter
 	push qword 0xC
 	push qword 0xD
 
-	mov rsp, rax ; restauro el rsp previo
-	mov rax, rbp ; en rax debe quedar el nuevo stack pointer desde el cual se restaura el contexto
-	pop rsp ; todo: revisar si esto esta de mas
+	mov rsp, rax ; restauro el rsp previo todo: revisar si esta demas
+	mov rax, rbp ; en rax debe quedar el nuevo stack pointer desde el cual se restaura el contexto luego
+	pop rsp 
 	pop rbp
 	ret
 
