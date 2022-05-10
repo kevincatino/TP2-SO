@@ -15,6 +15,7 @@
         "mem_manager_adt.h": "c",
         "time.h": "c",
         "scheduler.h": "c",
-        "libc.h": "c"
+        "libc.h": "c",
+        "lib.h": "c"
     }
 }

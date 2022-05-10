@@ -3,12 +3,14 @@ include ../Makefile.inc
 MODULE=0000-sampleCodeModule.bin
 SOURCES=$(wildcard *.c)
 SOURCES_C=$(wildcard LibC/*.c)	
+SOURCES_TEST=$(wildcard tests/*.c)	
 SOURCES_FUNC=$(wildcard Functionalities/*.c)	
 SOURCES_ASM=$(wildcard LibASM/*.asm)
 
 
 OBJECTS=$(SOURCES:.c=.o)
 OBJECTS_LIBC=$(SOURCES_C:.c=.o) 
+OBJECTS_TEST=$(SOURCES_TEST:.c=.o)
 OBJECTS_FUNC=$(SOURCES_FUNC:.c=.o)  
 OBJECTS_LIBASM=$(SOURCES_ASM:.asm=.o)
 	
@@ -16,9 +18,9 @@ OBJECTS_LIBASM=$(SOURCES_ASM:.asm=.o)
 
 all: $(MODULE)
 
-$(MODULE): $(OBJECTS) $(OBJECTS_LIBC) $(OBJECTS_FUNC) $(OBJECTS_LIBASM) 
-	$(LD) $(LDFLAGS) -T sampleCodeModule.ld _loader.o $(filter-out _loader.o,$(OBJECTS)) $(OBJECTS_LIBC) $(OBJECTS_FUNC) $(OBJECTS_LIBASM) -o ../$(MODULE)
-	@$(LD) $(LDFLAGS) -I./include -T sampleCodeModule.ld _loader.o $(filter-out _loader.o,$(OBJECTS)) $(OBJECTS_LIBC) $(OBJECTS_FUNC) $(OBJECTS_LIBASM) --oformat=elf64-x86-64 -o ../0000-sampleCodeModule.elf
+$(MODULE): $(OBJECTS) $(OBJECTS_LIBC) $(OBJECTS_TEST) $(OBJECTS_FUNC) $(OBJECTS_LIBASM) 
+	$(LD) $(LDFLAGS) -T sampleCodeModule.ld _loader.o $(filter-out _loader.o,$(OBJECTS)) $(OBJECTS_LIBC) $(OBJECTS_TEST) $(OBJECTS_FUNC) $(OBJECTS_LIBASM) -o ../$(MODULE)
+	@$(LD) $(LDFLAGS) -I./include -T sampleCodeModule.ld _loader.o $(filter-out _loader.o,$(OBJECTS)) $(OBJECTS_LIBC) $(OBJECTS_TEST) $(OBJECTS_FUNC) $(OBJECTS_LIBASM) --oformat=elf64-x86-64 -o ../0000-sampleCodeModule.elf
 	@echo "\033[3;36m[Userland/SampleCodeModule compiled]\033[0m"
 
 

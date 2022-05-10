@@ -234,7 +234,7 @@ uint64_t switchProcess(uint64_t sp)
   {
     scheduler->currentProcess->process.quantum--;
     // ncPrint(" ");
-    ncPrintDec(scheduler->currentProcess->process.pid);
+    // ncPrintDec(scheduler->currentProcess->process.pid);
     // ncPrint("P");
     // ncPrintDec(scheduler->currentProcess->process.priority);
     // ncPrint(" ");

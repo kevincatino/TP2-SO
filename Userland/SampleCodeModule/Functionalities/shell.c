@@ -1,5 +1,6 @@
 #include <shell.h>
 #include <libc.h>
+#include <test_lib.h>
 
 #define LOAD_GAME 0
 #define CONTINUE_GAME 1
@@ -326,5 +327,7 @@ void updateRegs(uint64_t *registers)
 }
 
 void memoryManagerTest() {
-    sys_change_process_priority(2, 5);
+    char *size = "100000000";
+    char args[] = {size};
+    test_mm(1, args);
 }
