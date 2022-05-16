@@ -45,4 +45,8 @@ uint32_t getCurrentPid();
 
 pcb *getCurrentProcess();
 
+void awakeProcessFromKBQueue();
+
+void getProcessIntoKBQueue();
+
 #endif

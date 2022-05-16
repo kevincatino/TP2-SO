@@ -48,7 +48,7 @@ $(LOADEROBJECT):
 	@$(ASM) $(ASMFLAGS) $(LOADERSRC) -o $(LOADEROBJECT)
 
 clean:
-	-@rm -rf LibC/*.o LibASM/*.o *.o *.bin Drivers/*.o IDT/*.o
+	-@rm -rf LibC/*.o LibASM/*.o *.o *.bin Drivers/*.o IDT/*.o *.o *.bin kernel.elf
 	@echo "\033[3;35m[Kernel cleaned]\033[0m"
 
 .PHONY: all clean

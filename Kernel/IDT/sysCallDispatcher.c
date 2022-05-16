@@ -50,7 +50,7 @@ uint64_t sys_read(unsigned int fd, char* buffer, uint64_t count){
     unsigned char *copyFromBuffer = getBuffer();
     int idx = 0;
 
-    if(fd == STDIN){
+    if(fd == STDIN) {
         for(idx = 0; copyFromBuffer[idx] != 0 && idx < count; idx++){
             buffer[idx + 1] = copyFromBuffer[idx];
         }

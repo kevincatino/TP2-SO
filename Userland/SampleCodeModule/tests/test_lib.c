@@ -2,6 +2,8 @@
 #include <libc.h>
 #include <test_lib.h>
 
+#define MAX_MEMORY 134217728
+
 uint64_t test_mm(uint64_t argc, char *argv[]) {
 
   mm_rq mm_rqs[MAX_BLOCKS];
@@ -12,17 +14,27 @@ uint64_t test_mm(uint64_t argc, char *argv[]) {
 
   if (argc != 1) return -1;
 
-  if ((max_memory = 100) <= 0) return -1;
+  max_memory = (satoi(argv[0])/100)*(MAX_MEMORY);
 
+  if ((max_memory) <= 0){
+    print("Memory value is invalid\n");
+     return -1;
+  }
 
+  print("Testing memory manager with max size = ");
+  print(argv[0]);
+  print("\%\n");
+  // return;
   // while (1){
     rq = 0;
     total = 0;
 
     // Request as many blocks as we can
-    while(rq < MAX_BLOCKS && total < max_memory){
+
+    while(rq < MAX_BLOCKS && total < max_memory) {
       mm_rqs[rq].size = GetUniform(max_memory - total - 1) + 1;
-      mm_rqs[rq].address = sys_alloc(mm_rqs[rq].size);
+      void * aux = sys_alloc(mm_rqs[rq].size);
+       mm_rqs[rq].address = aux;
 
       if(mm_rqs[rq].address){
         total += mm_rqs[rq].size;

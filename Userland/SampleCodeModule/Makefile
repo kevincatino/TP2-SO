@@ -35,7 +35,7 @@ $(MODULE): $(OBJECTS) $(OBJECTS_LIBC) $(OBJECTS_TEST) $(OBJECTS_FUNC) $(OBJECTS_
 
 
 clean:
-	-@rm -rf *.o LibASM/*.o LibC/*.o Functionalities/*.o
+	-@rm -rf *.o LibASM/*.o LibC/*.o Functionalities/*.o *.bin ../0000-sampleCodeModule.elf
 	@echo "\033[3;35m[Userland/SampleCodeModule cleaned]\033[0m"
 
 

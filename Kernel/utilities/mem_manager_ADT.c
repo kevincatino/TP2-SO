@@ -4,6 +4,7 @@
 
 #include "../include/mem_manager_ADT.h"
 #include <stdint.h>
+#include <naiveConsole.h>
 
 // Source: https://github.com/Infineon/freertos/blob/master/Source/portable/MemMang/heap_2.c
 
@@ -55,6 +56,9 @@ static void insertBlockIntoFreeList(MemoryManagerADT memoryManager, MemoryBlock 
 
 void *memoryAlloc(MemoryManagerADT const memoryManager, unsigned int memoryToAllocate) {
 
+  // ncPrintDec(memoryManager->freeBytesRemaining);
+  // ncPrint(" ");
+
   MemoryBlock *block, *previousBlock;
   void *blockToReturn = NULL;
 
@@ -76,8 +80,9 @@ void *memoryAlloc(MemoryManagerADT const memoryManager, unsigned int memoryToAll
       block = block->pnextFreeBlock;
     }
 
-    if (block == &memoryManager->end)
+    if (block == &memoryManager->end) {
       return NULL;
+    }
 
     blockToReturn = (void *) (((uint8_t *) block) + STRUCT_SIZE);
 

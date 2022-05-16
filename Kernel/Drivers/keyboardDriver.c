@@ -36,6 +36,7 @@ void keyboard_handler() {
             putCharInBuffer(scanToChar(scanCode));
         }
     }
+    awakeProcessFromKBQueue();
 }
 
 char scanToChar(int scancode) {
@@ -55,8 +56,10 @@ void putCharInBuffer(char sc) {
 }
 
 
-char getChar() {	
+char getChar() {
+    // ncPrint("S");	
     if (keyboardBufferSize <= 0) {
+        getProcessIntoKBQueue();
         return 0;
     }
     char key = keyboardBuffer[0];

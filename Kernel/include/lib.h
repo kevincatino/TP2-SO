@@ -13,6 +13,5 @@ uint64_t initProcess(uint64_t stackBase, uint64_t ip, uint32_t argc, char argv[6
 // Fuerza la ejecucion del scheduler con una llamada explicita a int 20h
 void forceScheduler(); // todo: Implementar funcion en assembler
 
-#define NULL ((void*)0)
 
 #endif

@@ -23,13 +23,28 @@ typedef struct Scheduler
 
 // start: cursorProcess -> shellProcess -> process3
 
+typedef struct KBNode
+{
+  pcb *process;
+  struct WaitingNode *next;
+} KBNode;
+
+typedef struct WaitingForKBList
+{
+  KBNode *list;
+  KBNode * last;
+  uint8_t size;
+} WaitingForKBList;
+
 Scheduler *scheduler;
 uint8_t firstProcess;
 uint32_t pid;
 ListNode *dummy;
+WaitingForKBList * kbList;
+
 
 /*
-Un poco de background porque no me acordaba de nada: El Kernel en su main, luego de copiar todo el sampleCodeModule a la posicion 0x400000, primero inicializa el scheduler y luego crea el primer proceso que va a correr el main del sampleCodeModule. Este proceso es la shell, y es el unico proceso que se crea con prioridad = 1 dado que es la shell quien lo crea.
+Un poco de background porque no me acordaba de nada: El Kernel en su main, luego de copiar todo el sampleCodeModule a la posicion 0x400000, primero inicializa el scheduler y luego crea el primer proceso que va a correr el main del sampleCodeModule. Este proceso es la shell, y es el unico proceso que se crea con prioridad = 1 dado que es el kernel quien lo crea.
 */
 
 static void cursorProcess()
@@ -101,6 +116,9 @@ void initScheduler()
   scheduler->start = NULL;
   pid = 1;
   firstProcess = 1;
+
+  kbList = (WaitingForKBList *)allocMemory(sizeof(WaitingForKBList));
+  kbList->size = 0;
 
   uint64_t dummyMemory = (uint64_t)allocMemory(2048); /// 2048 bytes = 2K
 
@@ -264,7 +282,7 @@ uint64_t switchProcess(uint64_t sp)
       scheduler->currentProcess = scheduler->currentProcess->next;
     }
 
-    if (scheduler->currentProcess->process.pid < 2 || scheduler->currentProcess->process.pstate == 1)
+    if (scheduler->currentProcess->process.pid < 1 || scheduler->currentProcess->process.pstate == 1)
       foundNext = 1;
   }
 
@@ -367,4 +385,38 @@ uint32_t getCurrentPid()
 pcb *getCurrentProcess()
 {
   return &scheduler->currentProcess->process;
+}
+
+void getProcessIntoKBQueue()
+{
+  scheduler->currentProcess->process.pstate = 0;
+
+  KBNode * aux = (KBNode *)allocMemory(sizeof(KBNode));
+  aux->process = &scheduler->currentProcess->process;
+  aux->next = NULL;
+
+  if (kbList->size == 0) {
+    kbList->list = kbList->last = aux;
+  }
+  else {
+    kbList->last->next = aux;
+    kbList->last = aux;
+    
+  }
+  kbList->size++;
+  forceScheduler();
+}
+
+void awakeProcessFromKBQueue()
+{
+  if (kbList->size == 0)
+    return;
+  // ncPrintDec(kbList->size);
+  // ncPrint("Awakening ");
+
+  kbList->size--;
+  kbList->list->process->pstate = 1;
+  KBNode * aux = kbList->list;
+  kbList->list= kbList->list->next;
+  freeMemory(aux);
 }

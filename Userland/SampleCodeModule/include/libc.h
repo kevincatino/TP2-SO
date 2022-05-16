@@ -41,6 +41,7 @@ extern int sys_create_process(uint64_t ip, uint8_t priority, uint64_t argc, char
 extern int sys_change_process_priority(uint32_t pid, uint8_t newPriority);
 extern int sys_change_process_state(uint32_t pid);
 extern void sys_exit();
+extern uint64_t sys_get_ticks();
 
 extern void get_regs();
 

@@ -4,6 +4,7 @@
 
 #define LOAD_GAME 0
 #define CONTINUE_GAME 1
+#define NULL ((void*)0)
 
 static uint64_t *registersCopy;
 
@@ -15,17 +16,6 @@ void loop() {
     static int prev=0;
     static int hola = 0;
     while(1) {
-        int ticks = sys_get_ticks();
-        if(ticks != prev && ticks %10 == 0) {
-            prev = ticks;
-            hola++;
-            if (hola >= 10) {
-                // print("Exiteo");
-                sys_exit();
-            }
-                
-        }
-        
             
     } 
 }
@@ -70,7 +60,7 @@ void printUser()
 
 int menuCommands(char *input)
 {
-    char *command[MAX_ARGUMENTS];
+    char *command[MAX_ARGUMENTS] = {NULL, NULL, NULL};
     int argSize = strtok(input, ' ', command, MAX_ARGUMENTS);
 
     if (argSize > 0 && argSize <= 2)
@@ -136,7 +126,7 @@ int menuCommands(char *input)
             clearScreen(GENERAL_SCREEN);
         }
         else if (strCmp(command[0], "mmTest") == 0){
-            memoryManagerTest();
+            memoryManagerTest(command[1]);
         }
         else
         {
@@ -334,8 +324,10 @@ void updateRegs(uint64_t *registers)
     }
 }
 
-void memoryManagerTest() {
-    char *size = "100000000";
-    char args[] = {size};
+void memoryManagerTest(char * max_size) {
+    if (!max_size)
+        max_size = "60";
+
+    char * args[] = {max_size};
     test_mm(1, args);
 }
