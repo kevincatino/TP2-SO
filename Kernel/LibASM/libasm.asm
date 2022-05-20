@@ -6,6 +6,7 @@ GLOBAL asmGetByte
 GLOBAL get_regs
 GLOBAL initProcess
 GLOBAL forceScheduler
+GLOBAL xchg
 
 
 section .text
@@ -175,6 +176,13 @@ get_regs:
     mov rsp, rbp
 	pop rbp
     ret
+
+
+
+xchg:
+	mov rax, rsi 
+	xchg [rdi], eax
+	ret
 
 
 section .bss
