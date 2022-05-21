@@ -18,6 +18,7 @@
         "libc.h": "c",
         "lib.h": "c",
         "semaphore.h": "c",
-        "stdint.h": "c"
+        "stdint.h": "c",
+        "naiveconsole.h": "c"
     }
 }
