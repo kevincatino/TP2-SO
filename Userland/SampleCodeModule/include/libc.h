@@ -23,6 +23,9 @@
 #define BROWN 0x06
 #define LIGHT_BLUE 0x0B
 
+#define READY 1
+#define BLOCKED 0
+
 
 extern int sys_read(unsigned int fd, char* buffer, unsigned int buffercount);    
 extern int sys_write(unsigned int fd, char*buffer, unsigned int buffersize); 
@@ -39,12 +42,24 @@ extern void *sys_alloc(unsigned int to_alloc);
 extern void sys_free(void *to_free);
 extern int sys_create_process(uint64_t ip, uint8_t priority, uint64_t argc, char *argv);
 extern int sys_change_process_priority(uint32_t pid, uint8_t newPriority);
-extern int sys_change_process_state(uint32_t pid);
+extern int sys_change_process_state(uint32_t pid, uint8_t state);
 extern void sys_exit();
 extern uint64_t sys_get_ticks();
 
 extern void get_regs();
 extern uint64_t xchg(uint64_t * lock, uint64_t value);
+
+typedef struct Sem_T * Semaphore;
+
+extern Semaphore sys_sem_open(uint32_t id, int initialValue);
+
+extern int sys_sem_close(Semaphore sem);
+
+extern int sys_sem_signal(Semaphore sem);
+
+extern int sys_sem_wait(Semaphore sem);
+
+extern uint32_t sys_pid();
 
 
 

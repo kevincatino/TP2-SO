@@ -3,7 +3,11 @@
 
 #include "../include/lib.h"
 #include "../include/the_memory_manager.h"
+
+#define READY 1
+#define BLOCKED 0
 #define ARG_LENGTH 25
+#define NULL ((void*) 0)
 
 typedef struct pcb {
   char args[6][25];
@@ -35,11 +39,11 @@ void killPid(uint32_t pid);
 
 void changeProcessPriority(uint32_t pid, uint8_t newPriority);
 
-void changeProcessState(uint32_t pid);
+void changeProcessState(uint32_t pid, uint8_t state);
 
 void changeProcessPriorityForUser(uint32_t pid, uint8_t newPriority);
 
-void changeProcessStateForUser(uint32_t pid);
+void changeProcessStateForUser(uint32_t pid, uint8_t state);
 
 uint32_t getCurrentPid();
 
@@ -48,5 +52,7 @@ pcb *getCurrentProcess();
 void awakeProcessFromKBQueue();
 
 void getProcessIntoKBQueue();
+
+pcb *blockCurrentProcess();
 
 #endif

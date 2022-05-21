@@ -2,6 +2,7 @@
 #include "../include/naiveConsole.h"
 #include "../include/interrupts.h"
 #include "../include/time.h"
+#include "../include/semaphore.h"
 #include <scheduler.h>
 
 #define QUANTUM 2
@@ -298,8 +299,10 @@ static ListNode *deleteProcess(ListNode *node, uint32_t pid)
   {
     node->process.pstate = 2;
     ListNode *aux = node->next;
+    deleteProcessFromSemaphores(pid);
     freeMemory((void *)node->process.processMemory);
     freeMemory((void *)node);
+    
     return aux;
   }
 
@@ -336,7 +339,7 @@ static pcb *getPCB(ListNode *node, uint32_t pid)
 }
 
 // Cambia el estado del proceso de ready a sleep o viceversa
-void changeProcessState(uint32_t pid)
+void changeProcessState(uint32_t pid, uint8_t state)
 {
   if (pid <= 1)
     return;
@@ -346,13 +349,13 @@ void changeProcessState(uint32_t pid)
   if (pidPCB == NULL)
     return;
 
-  if (pidPCB->pstate == 1)
+  if (pidPCB->pstate == 1 && state == 0)
   {
     pidPCB->pstate = 0;
     if (pid == scheduler->currentProcess->process.pid)
       forceScheduler();
   }
-  else if (pidPCB->pstate == 0)
+  else if (state == 1)
     pidPCB->pstate = 1;
 }
 
@@ -370,11 +373,11 @@ void changeProcessPriorityForUser(uint32_t pid, uint8_t newPriority) {
   changeProcessPriority(pid,newPriority);
 }
 
-void changeProcessStateForUser(uint32_t pid) {
-  if (!userValidPid(pid))
+void changeProcessStateForUser(uint32_t pid, uint8_t state) {
+  if (!userValidPid(pid) || (state != READY && state != BLOCKED))
     return;
 
-    changeProcessState(pid);
+    changeProcessState(pid, state);
 }
 
 uint32_t getCurrentPid()
@@ -415,8 +418,14 @@ void awakeProcessFromKBQueue()
   // ncPrint("Awakening ");
 
   kbList->size--;
-  kbList->list->process->pstate = 1;
+  kbList->list->process->pstate = READY;
   KBNode * aux = kbList->list;
   kbList->list= kbList->list->next;
   freeMemory(aux);
+}
+
+pcb *blockCurrentProcess()
+{
+  scheduler->currentProcess->process.pstate = BLOCKED;
+  return &scheduler->currentProcess->process;
 }

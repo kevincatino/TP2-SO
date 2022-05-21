@@ -1,4 +1,5 @@
 #include <stdint.h>
+#include <libc.h>
 
 int64_t my_getpid(){
   return 0;

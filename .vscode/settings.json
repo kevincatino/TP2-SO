@@ -16,6 +16,8 @@
         "time.h": "c",
         "scheduler.h": "c",
         "libc.h": "c",
-        "lib.h": "c"
+        "lib.h": "c",
+        "semaphore.h": "c",
+        "stdint.h": "c"
     }
 }

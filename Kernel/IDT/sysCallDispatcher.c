@@ -3,6 +3,7 @@
 #include <scheduler.h>
 #include <lib.h>
 #include "../include/time.h"
+#include "../include/semaphore.h"
 
 
 typedef uint64_t (*TypeSysCall)(uint64_t, uint64_t, uint64_t);
@@ -13,7 +14,7 @@ void exit() {
 }
 
 
-static TypeSysCall arraySysCalls[255] = {(TypeSysCall)&sys_read, (TypeSysCall)&sys_write, (TypeSysCall)&sys_get_char, (TypeSysCall)&sys_get_time, (TypeSysCall)&sys_screen_divition, (TypeSysCall)&sys_screen_clear, (TypeSysCall)&sys_memory_dump, (TypeSysCall)&sys_print_user, (TypeSysCall)&sys_print_sudoku_numbers, (TypeSysCall)&sys_print_in_screen_position, (TypeSysCall)&sys_screen_mode, (TypeSysCall)&sys_get_milli_seconds, (TypeSysCall)&sys_print_regs, (TypeSysCall)&allocMemory, (TypeSysCall)&freeMemory, (TypeSysCall)&createProcessForUser, (TypeSysCall)&ticks_elapsed, (TypeSysCall)&changeProcessPriorityForUser, (TypeSysCall)&changeProcessStateForUser, (TypeSysCall)&exitCurrentProcess};
+static TypeSysCall arraySysCalls[255] = {(TypeSysCall)&sys_read, (TypeSysCall)&sys_write, (TypeSysCall)&sys_get_char, (TypeSysCall)&sys_get_time, (TypeSysCall)&sys_screen_divition, (TypeSysCall)&sys_screen_clear, (TypeSysCall)&sys_memory_dump, (TypeSysCall)&sys_print_user, (TypeSysCall)&sys_print_sudoku_numbers, (TypeSysCall)&sys_print_in_screen_position, (TypeSysCall)&sys_screen_mode, (TypeSysCall)&sys_get_milli_seconds, (TypeSysCall)&sys_print_regs, (TypeSysCall)&allocMemory, (TypeSysCall)&freeMemory, (TypeSysCall)&createProcessForUser, (TypeSysCall)&ticks_elapsed, (TypeSysCall)&changeProcessPriorityForUser, (TypeSysCall)&changeProcessStateForUser, (TypeSysCall)&exitCurrentProcess, (TypeSysCall)&my_signal, (TypeSysCall)&my_wait, (TypeSysCall)&my_sem_open, (TypeSysCall)&my_sem_close, (TypeSysCall)&getCurrentPid};
 
 
 uint64_t sysCallDispatcher(uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t rax) {

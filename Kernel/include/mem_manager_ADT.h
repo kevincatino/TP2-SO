@@ -5,7 +5,7 @@
 #define BYTE_ALIGNMENT 8
 #define BYTE_ALIGNMENT_MASK 0x07
 
-typedef struct MemoryManagerCDT *MemoryManagerADT;
+typedef struct MemoryManagerCDT * MemoryManagerADT;
 
 MemoryManagerADT createMemManager(void *const memoryForMemoryManager, void *const managedMemory);
 

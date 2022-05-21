@@ -20,6 +20,11 @@ GLOBAL sys_get_ticks
 GLOBAL sys_change_process_priority
 GLOBAL sys_change_process_state
 GLOBAL sys_exit
+GLOBAL sys_sem_open
+GLOBAL sys_sem_close
+GLOBAL sys_sem_signal
+GLOBAL sys_sem_wait
+GLOBAL sys_pid
 
 ;-----------------------------------------------------------
 ; sys_read - lee de file descriptor
@@ -313,6 +318,71 @@ sys_exit:
     push rbx
 
     mov rax, 19  
+    int 80h
+
+    pop rbx
+    mov rsp, rbp     
+    pop rbp     
+    ret
+
+sys_sem_signal:
+    push rbp     
+    mov rbp, rsp     
+    push rbx
+
+    mov rax, 20  
+    int 80h
+
+    pop rbx
+    mov rsp, rbp     
+    pop rbp     
+    ret
+
+sys_sem_wait:
+    push rbp     
+    mov rbp, rsp     
+    push rbx
+
+    mov rax, 21 
+    int 80h
+
+    pop rbx
+    mov rsp, rbp     
+    pop rbp     
+    ret
+
+sys_sem_open:
+    push rbp     
+    mov rbp, rsp     
+    push rbx
+
+    mov rax, 22
+    int 80h
+
+    pop rbx
+    mov rsp, rbp     
+    pop rbp     
+    ret
+
+sys_sem_close:
+    push rbp     
+    mov rbp, rsp     
+    push rbx
+
+    mov rax, 23  
+    int 80h
+
+    pop rbx
+    mov rsp, rbp     
+    pop rbp     
+    ret
+
+sys_pid:
+    push rbp     
+    mov rbp, rsp     
+    push rbx
+
+    mov rax, 24  
     int 80h
 
     pop rbx
