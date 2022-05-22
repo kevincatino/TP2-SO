@@ -11,18 +11,19 @@ static uint64_t *registersCopy;
 int gameCommands(char *input);
 void initializeAllGames();
 void memoryManagerTest();
+void syncTest(char * sync);
 
 void loop() {
     static int prev=0;
     static int hola = 0;
-    while(1) {
-            
-    } 
+    while(sys_get_ticks() < 100);
+    sys_exit();
 }
 
 void initializeShell()
 {
-    sys_create_process(&loop, 2, 1, "loop");
+    char * args[] = {"loop"};
+    // sys_create_process(&loop, 2, 1, args);
     initialMessage();
     generalShell();
 }
@@ -127,6 +128,9 @@ int menuCommands(char *input)
         }
         else if (strCmp(command[0], "mmTest") == 0){
             memoryManagerTest(command[1]);
+        }
+        else if (strCmp(command[0], "syncTest") == 0){
+            syncTest(command[1]);
         }
         else
         {
@@ -330,4 +334,13 @@ void memoryManagerTest(char * max_size) {
 
     char * args[] = {max_size};
     test_mm(1, args);
+}
+
+void syncTest(char * sync) {
+    if (sync == NULL) {
+        testSync();
+    }
+    else if (strCmp(sync, "no-sem") == 0) {
+        testNoSync();
+    }
 }

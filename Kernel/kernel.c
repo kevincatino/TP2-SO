@@ -69,7 +69,9 @@ int main() {
 
 	initScheduler();
 
-	createProcessWrapper(sampleCodeModuleAddress, 1, 1, "Shell");
+	char * shell[] = {"Shell"};
+
+	createProcessWrapper(sampleCodeModuleAddress, 1, 1, shell);
 
 	_sti();
 

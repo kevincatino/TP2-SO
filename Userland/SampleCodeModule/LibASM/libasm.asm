@@ -25,6 +25,7 @@ GLOBAL sys_sem_close
 GLOBAL sys_sem_signal
 GLOBAL sys_sem_wait
 GLOBAL sys_pid
+GLOBAL sys_yield
 
 ;-----------------------------------------------------------
 ; sys_read - lee de file descriptor
@@ -383,6 +384,19 @@ sys_pid:
     push rbx
 
     mov rax, 24  
+    int 80h
+
+    pop rbx
+    mov rsp, rbp     
+    pop rbp     
+    ret
+
+sys_yield:
+    push rbp     
+    mov rbp, rsp     
+    push rbx
+
+    mov rax, 25  
     int 80h
 
     pop rbx

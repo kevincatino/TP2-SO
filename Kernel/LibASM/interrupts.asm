@@ -210,10 +210,16 @@ _exception6Handler:
 	exceptionHandler 6
 
 
+EXTERN loadSyscallNum
 
 _sysCallHandler:
+cli
     pushStateNoRax
-	mov rcx, rax
+	push rdi
+  mov rdi, rax
+  call loadSyscallNum
+  pop rdi
+	; mov rcx, rax
 	call sysCallDispatcher
 
 	push rax
@@ -222,6 +228,7 @@ _sysCallHandler:
 	pop rax
 	
 	popStateNoRax ; ya desde antes haciamos push/popStateNoRax asi que lo dejamos igual
+	sti
 	iretq
 
 

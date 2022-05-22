@@ -31,7 +31,7 @@ uint8_t internalId = 0;
 
 fd *createFd()
 {
-    return (fd *)alloc(sizeof(fd));
+    return (fd *)allocMemory(sizeof(fd));
 }
 
 // Tanto fd1 como fd2 deben ser distintos de NULL y se genera un id interno para el pipe
@@ -44,7 +44,7 @@ int createPipe(fd *f0, fd *f1)
         internalId--;
  
 
-    pipes[pipesQty] = (pipeData *)alloc(sizeof(pipeData));
+    pipes[pipesQty] = (pipeData *)allocMemory(sizeof(pipeData));
     (*pipes[pipesQty]) = (pipeData){.readIdx = 0, .writeIdx = 0, .reading = 1, .writing = 1, .readableBytes = 0, .id = internalId, .waitingPCB = NULL};
 
 
@@ -95,12 +95,12 @@ int openPipeId(fd *fd, uint32_t id, int readwrite)
         if (pipesQty == PIPES_MAXQTY)
             return -1;
 
-               pipes[pipesQty] = (pipeData *)alloc(sizeof(pipeData));
+               pipes[pipesQty] = (pipeData *)allocMemory(sizeof(pipeData));
     (*pipes[pipesQty++]) = (pipeData){.readIdx = 0, .writeIdx = 0, .reading = (readwrite == READ), .writing = (readwrite == WRITE), .readableBytes = 0, .id = id, .waitingPCB = NULL};
 
         return 1;
 
-        // pipes[pipesQty] = (pipeData *) alloc(sizeof(pipeData));
+        // pipes[pipesQty] = (pipeData *) allocMemory(sizeof(pipeData));
         // fd->pipe = pipes[pipesQty++];
         // fd->pipe->readableBytes = 0;
         // fd->pipe->readIdx = 0;

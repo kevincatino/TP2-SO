@@ -185,7 +185,14 @@ int strCmp( char * s1,  char * s2) {
 
 void printNum(int num) {
 	char buffer[40];
+	int sign = 0;
+	if (num < 0) {
+		num = -num;
+		sign = 1;
+	}
 	uintToBase(num, buffer, 10);
+	if (sign)
+		print("-");
 	print(buffer);
 }
 

@@ -14,7 +14,7 @@ uint64_t test_mm(uint64_t argc, char *argv[]) {
 
   if (argc != 1) return -1;
 
-  max_memory = (satoi(argv[0])/100)*(MAX_MEMORY);
+  max_memory = (uint64_t) (satoi(argv[0]))*(MAX_MEMORY)/100;
 
   if ((max_memory) <= 0){
     print("Memory value is invalid\n");

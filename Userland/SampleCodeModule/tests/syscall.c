@@ -6,7 +6,7 @@ int64_t my_getpid(){
 }
 
 int64_t my_create_process(char * name, uint64_t argc, char *argv[]){
-  return 0;
+
 }
 
 int64_t my_nice(uint64_t pid, uint64_t newPrio){

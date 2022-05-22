@@ -6,21 +6,27 @@
 #include "../include/semaphore.h"
 
 
-typedef uint64_t (*TypeSysCall)(uint64_t, uint64_t, uint64_t);
+typedef uint64_t (*TypeSysCall)(uint64_t, uint64_t, uint64_t, uint64_t, uint64_t, uint64_t);
+
+static uint64_t syscall;
 
 void exit() {
     ncPrint("EXIT");
     // exitCurrentProcess();
 }
 
+void loadSyscallNum(uint64_t rax) {
+    syscall = rax;
+}
 
-static TypeSysCall arraySysCalls[255] = {(TypeSysCall)&sys_read, (TypeSysCall)&sys_write, (TypeSysCall)&sys_get_char, (TypeSysCall)&sys_get_time, (TypeSysCall)&sys_screen_divition, (TypeSysCall)&sys_screen_clear, (TypeSysCall)&sys_memory_dump, (TypeSysCall)&sys_print_user, (TypeSysCall)&sys_print_sudoku_numbers, (TypeSysCall)&sys_print_in_screen_position, (TypeSysCall)&sys_screen_mode, (TypeSysCall)&sys_get_milli_seconds, (TypeSysCall)&sys_print_regs, (TypeSysCall)&allocMemory, (TypeSysCall)&freeMemory, (TypeSysCall)&createProcessForUser, (TypeSysCall)&ticks_elapsed, (TypeSysCall)&changeProcessPriorityForUser, (TypeSysCall)&changeProcessStateForUser, (TypeSysCall)&exitCurrentProcess, (TypeSysCall)&my_signal, (TypeSysCall)&my_wait, (TypeSysCall)&my_sem_open, (TypeSysCall)&my_sem_close, (TypeSysCall)&getCurrentPid};
+
+static TypeSysCall arraySysCalls[255] = {(TypeSysCall)&sys_read, (TypeSysCall)&sys_write, (TypeSysCall)&sys_get_char, (TypeSysCall)&sys_get_time, (TypeSysCall)&sys_screen_divition, (TypeSysCall)&sys_screen_clear, (TypeSysCall)&sys_memory_dump, (TypeSysCall)&sys_print_user, (TypeSysCall)&sys_print_sudoku_numbers, (TypeSysCall)&sys_print_in_screen_position, (TypeSysCall)&sys_screen_mode, (TypeSysCall)&sys_get_milli_seconds, (TypeSysCall)&sys_print_regs, (TypeSysCall)&allocMemory, (TypeSysCall)&freeMemory, (TypeSysCall)&createProcessForUser, (TypeSysCall)&ticks_elapsed, (TypeSysCall)&changeProcessPriorityForUser, (TypeSysCall)&changeProcessStateForUser, (TypeSysCall)&exitCurrentProcess, (TypeSysCall)&my_signal, (TypeSysCall)&my_wait, (TypeSysCall)&my_sem_open, (TypeSysCall)&my_sem_close, (TypeSysCall)&getCurrentPid, (TypeSysCall)&forceScheduler};
 
 
-uint64_t sysCallDispatcher(uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t rax) {
-    TypeSysCall sysCall = arraySysCalls[rax];
+uint64_t sysCallDispatcher(uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t rcx, uint64_t r8, uint64_t r9) {
+    TypeSysCall sysCall = arraySysCalls[syscall];
     if(sysCall != 0)
-        return sysCall(rdi, rsi, rdx);
+        return sysCall(rdi, rsi, rdx, rcx, r8, r9);
     
     return 0;
 }

@@ -33,7 +33,7 @@ typedef struct KBNode
 typedef struct WaitingForKBList
 {
   KBNode *list;
-  KBNode * last;
+  KBNode *last;
   uint8_t size;
 } WaitingForKBList;
 
@@ -41,8 +41,7 @@ Scheduler *scheduler;
 uint8_t firstProcess;
 uint32_t pid;
 ListNode *dummy;
-WaitingForKBList * kbList;
-
+WaitingForKBList *kbList;
 
 /*
 Un poco de background porque no me acordaba de nada: El Kernel en su main, luego de copiar todo el sampleCodeModule a la posicion 0x400000, primero inicializa el scheduler y luego crea el primer proceso que va a correr el main del sampleCodeModule. Este proceso es la shell, y es el unico proceso que se crea con prioridad = 1 dado que es el kernel quien lo crea.
@@ -102,12 +101,14 @@ static void setBlockPriority(pcb *block, uint8_t newPriority)
   block->quantum = getQuantum(newPriority);
 }
 
-static int8_t userValidPid(int8_t pid) {
-  return pid>=2;
+static int8_t userValidPid(int8_t pid)
+{
+  return pid >= 2;
 }
 
-static int8_t userValidPriority(int8_t priority) {
-  return priority >= 2 && priority <=5;
+static int8_t userValidPriority(int8_t priority)
+{
+  return priority >= 2 && priority <= 5;
 }
 
 void initScheduler()
@@ -144,6 +145,7 @@ static ListNode *loadProcess(ListNode *node, uint32_t pid, uint8_t priority, int
   // Si la lista de procesos esta vacia, creo el nodo, inicio el proceso y retorno el nodo como inicio de la lista
   if (node == NULL)
   {
+
     ListNode *newNode = (ListNode *)allocMemory(sizeof(ListNode));
     newNode->process.pid = pid;
     newNode->process.pstate = 1;
@@ -170,6 +172,8 @@ static ListNode *loadProcess(ListNode *node, uint32_t pid, uint8_t priority, int
     return node;
   }
 
+
+
   // O bien estoy en el final de la lista, o llegue a un nodo con menor prioridad, en ambos casos tengo que crear el proceso y encolarlo en este punto
 
   ListNode *newNode = (ListNode *)allocMemory(sizeof(ListNode));
@@ -182,10 +186,21 @@ static ListNode *loadProcess(ListNode *node, uint32_t pid, uint8_t priority, int
   newNode->process.priority = priority;
   newNode->process.quantum = getQuantum(priority);
   // Copio los argumentos al nodo creado
-  for (int i = 0; i < argc; i++)
+  for (int i = 0; i < argc; i++) {
     stringCopy(newNode->process.args[i], args[i]);
+    newNode->process.argv[i] = newNode->process.args[i];
+  }
+    
+
+  //       int i = 0;
+  // while (i < argc)
+  // {
+  //   ncPrint(newNode->process.argv[i]);
+  //   i++;
+  // }
+
   uint64_t processMemory = (uint64_t)allocMemory(DEFAULT_PROGRAM_SIZE);
-  uint64_t sp = initProcess(processMemory + DEFAULT_PROGRAM_SIZE, ip, argc, newNode->process.args);
+  uint64_t sp = initProcess(processMemory + DEFAULT_PROGRAM_SIZE, ip, argc, newNode->process.argv);
   newNode->process.sp = sp;
   newNode->process.bp = processMemory + DEFAULT_PROGRAM_SIZE - 1;
   newNode->process.processMemory = processMemory;
@@ -193,17 +208,31 @@ static ListNode *loadProcess(ListNode *node, uint32_t pid, uint8_t priority, int
   return node;
 }
 
+// typedef void (*TypeFunc)(uint64_t, char **);
+
+// void processWrapper(uint64_t ip, uint64_t argc, char argv[6][ARG_LENGTH]) {
+//    ((TypeFunc)ip)(argc, argv); 
+// }
+
 // Crea un proceso de prioridad 'priority' con ciertos argumentos
 uint32_t createProcess(uint64_t ip, uint8_t priority, uint64_t argc, char argv[6][ARG_LENGTH])
 {
   // El scheduler pasa a obtener el foreground si la prioridad del nuevo proceso es maxima y tengo mas procesos ademas de la shell
   int thisPid = pid;
+  // int i = 0;
+  // while (i < argc)
+  // {
+  //   ncPrint(argv[i]);
+  //   // stringCopy(args[i], argv[i]);
+  //   i++;
+  // }
+
   scheduler->start = loadProcess(scheduler->start, pid++, priority, argc, argv, ip);
 
   return thisPid;
 }
 
-uint32_t createProcessForUser(uint64_t ip, uint8_t priority, uint64_t argc, char *argv)
+uint32_t createProcessForUser(uint64_t ip, uint8_t priority, uint64_t argc, char *argv[])
 {
   if (!userValidPriority(priority))
     return -1; // el usuario no puede crear procesos con prioridad menor a 2 o mayor a 20
@@ -212,21 +241,15 @@ uint32_t createProcessForUser(uint64_t ip, uint8_t priority, uint64_t argc, char
 }
 
 // Funcion auxiliar que copia el vector de argumentos a un arreglo (no hacemos malloc, hay limitaciones en la longitud y cantidad de argumentos)
-uint32_t createProcessWrapper(uint64_t ip, uint8_t priority, uint64_t argc, char *argv)
+uint32_t createProcessWrapper(uint64_t ip, uint8_t priority, uint64_t argc, char *argv[])
 {
-  int i = 0, j = 0;
+  int i = 0;
   char args[6][ARG_LENGTH];
+
   while (i < argc)
   {
-    int k = 0;
-    while (argv[j])
-    {
-      args[i][k] = argv[j];
-      j++;
-      k++;
-    }
-    args[i][k] = 0;
-    j++;
+    // ncPrint(argv[i]);
+    stringCopy(args[i], argv[i]);
     i++;
   }
 
@@ -248,12 +271,13 @@ uint64_t switchProcess(uint64_t sp)
     return scheduler->start->process.sp;
   }
 
+  // ncPrintDec(scheduler->currentProcess->process.pid);
+
   // Si faltan ticks por correr, disminuimos el quantum y seguimos en el mismo proceso
-  if (scheduler->currentProcess->process.quantum > 0 && scheduler->currentProcess->process.pstate == 1)
+  if (sp != NULL && scheduler->currentProcess->process.quantum > 0 && scheduler->currentProcess->process.pstate == 1)
   {
     scheduler->currentProcess->process.quantum--;
     // ncPrint(" ");
-    // ncPrintDec(scheduler->currentProcess->process.pid);
     // ncPrint("P");
     // ncPrintDec(scheduler->currentProcess->process.priority);
     // ncPrint(" ");
@@ -292,6 +316,7 @@ uint64_t switchProcess(uint64_t sp)
 
 static ListNode *deleteProcess(ListNode *node, uint32_t pid)
 {
+
   if (node == NULL)
     return node;
 
@@ -302,7 +327,14 @@ static ListNode *deleteProcess(ListNode *node, uint32_t pid)
     deleteProcessFromSemaphores(pid);
     freeMemory((void *)node->process.processMemory);
     freeMemory((void *)node);
-    
+
+    // int initialTicks = ticks_elapsed();
+    // ncPrint("Exiting pid ");
+    // ncPrintDec(pid);
+
+    // while (ticks_elapsed() < (initialTicks + 100))
+    //   ;
+
     return aux;
   }
 
@@ -312,13 +344,22 @@ static ListNode *deleteProcess(ListNode *node, uint32_t pid)
 
 void exitCurrentProcess()
 {
-  scheduler->start = deleteProcess(scheduler->start, scheduler->currentProcess->process.pid);
+  // uint32_t currentPid = scheduler->currentProcess->process.pid;
+  
+  // scheduler->start = deleteProcess(scheduler->start, scheduler->currentProcess->process.pid);
+  killPid(scheduler->currentProcess->process.pid);
 }
 
 void killPid(uint32_t pid)
 {
-  if (pid > 1)
+  if (pid > 1) {
+
     scheduler->start = deleteProcess(scheduler->start, pid);
+        if (scheduler->currentProcess->process.pid == pid) {
+        forceScheduler();
+    }
+  }
+    
 }
 
 void printProcessList()
@@ -345,7 +386,7 @@ void changeProcessState(uint32_t pid, uint8_t state)
     return;
 
   pcb *pidPCB = getPCB(scheduler->start, pid);
-  
+
   if (pidPCB == NULL)
     return;
 
@@ -366,18 +407,20 @@ void changeProcessPriority(uint32_t pid, uint8_t newPriority)
   setBlockPriority(block, newPriority);
 }
 
-void changeProcessPriorityForUser(uint32_t pid, uint8_t newPriority) {
+void changeProcessPriorityForUser(uint32_t pid, uint8_t newPriority)
+{
   if (!userValidPriority(newPriority))
-      return;
+    return;
 
-  changeProcessPriority(pid,newPriority);
+  changeProcessPriority(pid, newPriority);
 }
 
-void changeProcessStateForUser(uint32_t pid, uint8_t state) {
+void changeProcessStateForUser(uint32_t pid, uint8_t state)
+{
   if (!userValidPid(pid) || (state != READY && state != BLOCKED))
     return;
 
-    changeProcessState(pid, state);
+  changeProcessState(pid, state);
 }
 
 uint32_t getCurrentPid()
@@ -394,17 +437,18 @@ void getProcessIntoKBQueue()
 {
   scheduler->currentProcess->process.pstate = 0;
 
-  KBNode * aux = (KBNode *)allocMemory(sizeof(KBNode));
+  KBNode *aux = (KBNode *)allocMemory(sizeof(KBNode));
   aux->process = &scheduler->currentProcess->process;
   aux->next = NULL;
 
-  if (kbList->size == 0) {
+  if (kbList->size == 0)
+  {
     kbList->list = kbList->last = aux;
   }
-  else {
+  else
+  {
     kbList->last->next = aux;
     kbList->last = aux;
-    
   }
   kbList->size++;
   forceScheduler();
@@ -419,8 +463,8 @@ void awakeProcessFromKBQueue()
 
   kbList->size--;
   kbList->list->process->pstate = READY;
-  KBNode * aux = kbList->list;
-  kbList->list= kbList->list->next;
+  KBNode *aux = kbList->list;
+  kbList->list = kbList->list->next;
   freeMemory(aux);
 }
 

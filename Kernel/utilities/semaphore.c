@@ -14,7 +14,7 @@ typedef struct Sem_T
 } Sem_T;
 
 
-Sem_T sems[MAX_SEMS];
+Sem_T * sems[MAX_SEMS];
 uint8_t privSem = 0;
 uint32_t qty = 0;
 
@@ -28,20 +28,21 @@ Semaphore my_sem_open(uint32_t id, int initialValue)
         return NULL;
 
     int semIdx = 0;
-    while (semIdx < qty && sems[semIdx].id != id)
+    while (semIdx < qty && sems[semIdx]->id != id)
         semIdx++;
 
     if (semIdx == qty)
     {
         // creamos un sem nuevo
-        sems[qty] = (Sem_T){.id = id, .value = initialValue, .waitingProcQty = 0, .mutex = 0};
+        sems[qty] = (Sem_T *) allocMemory(sizeof(Sem_T));
+        (*sems[qty]) = (Sem_T){.id = id, .value = initialValue, .waitingProcQty = 0, .mutex = 0};
 
         xchg(&privSem, 0);
-        return &sems[qty++];
+        return sems[qty++];
     }
 
     xchg(&privSem, 0);
-    return &sems[semIdx];
+    return sems[semIdx];
 }
 
 // devuelve -1 sin cerrar el semaforo cuando hay procesos en la lista de espera por el post o no se encuentra el semaforo
@@ -53,7 +54,7 @@ int my_sem_close(Semaphore sem)
         return -1;
 
     int semIdx = 0;
-    while (semIdx < qty && sem->id != sems[semIdx].id)
+    while (semIdx < qty && sem->id != sems[semIdx]->id)
         semIdx++;
 
     if (semIdx == qty)
@@ -72,6 +73,8 @@ int my_sem_close(Semaphore sem)
     }
 
     qty--;
+
+    freeMemory(sem);
 
     xchg(&privSem, 0);
     return 0;
@@ -119,7 +122,7 @@ int my_wait(Semaphore sem)
 
         sem->waitingProcs[sem->waitingProcQty++] = blockCurrentProcess();
         xchg(&sem->mutex, 0);
-        runScheduler(); 
+        forceScheduler(); 
 
         while (xchg(&sem->mutex, 1) != 0)
             ;
