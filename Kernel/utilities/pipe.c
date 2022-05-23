@@ -2,28 +2,9 @@
 #include "../include/naiveConsole.h"
 #include <scheduler.h>
 
-#define DATA_SIZE 512
-#define PIPES_MAXQTY 20
-#define WRITE 1
-#define READ 0
 
-typedef struct pipeData
-{
-    int id;
-    char data[DATA_SIZE];
-    uint32_t readableBytes;
-    uint32_t writeIdx;
-    uint32_t readIdx;
-    uint8_t writing;
-    uint8_t reading;
-    pcb *waitingPCB;
-} pipeData;
 
-typedef struct fd
-{
-    int readwrite;
-    struct pipeData *pipe;
-} fd;
+
 
 pipeData *pipes[PIPES_MAXQTY];
 uint32_t pipesQty = 0;
@@ -141,9 +122,9 @@ static void deletePipe(pipeData * p)
     pipesQty--;
 }
 
-void closeFdPipe(fd *fd)
+void closeFd(fd *fd)
 {
-    if (fd == NULL)
+    if (fd == STDIN || fd == STDOUT)
         return;
 
     if (fd->readwrite == READ)

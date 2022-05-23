@@ -139,7 +139,7 @@ void initScheduler()
 }
 
 // Funcion auxiliar recursiva que crea y encola un proceso de prioridad 'priority'
-static ListNode *loadProcess(ListNode *node, uint32_t pid, uint8_t priority, int argc, char args[6][ARG_LENGTH], uint64_t ip)
+static ListNode *loadProcess(ListNode *node, uint32_t pid, uint8_t priority, int argc, char args[6][ARG_LENGTH], uint64_t ip, fd * stdin, fd * stdout)
 {
 
   // Si la lista de procesos esta vacia, creo el nodo, inicio el proceso y retorno el nodo como inicio de la lista
@@ -161,6 +161,11 @@ static ListNode *loadProcess(ListNode *node, uint32_t pid, uint8_t priority, int
     newNode->process.sp = sp;
     newNode->process.bp = processMemory + DEFAULT_PROGRAM_SIZE - 1;
     newNode->process.processMemory = processMemory;
+    newNode->process.stdin = stdin;
+    newNode->process.stdout = stdout;
+
+    ncPrint("stdout es ");
+    ncPrintDec(stdout);
 
     return newNode;
   }
@@ -168,7 +173,7 @@ static ListNode *loadProcess(ListNode *node, uint32_t pid, uint8_t priority, int
   // Llamada recursiva: si estoy en un nodo de mayor prioridad que 'priority', tengo que encolar el proceso mas adelante
   if (node->next != NULL)
   {
-    node->next = loadProcess(node->next, pid, priority, argc, args, ip);
+    node->next = loadProcess(node->next, pid, priority, argc, args, ip, stdin, stdout);
     return node;
   }
 
@@ -190,58 +195,42 @@ static ListNode *loadProcess(ListNode *node, uint32_t pid, uint8_t priority, int
     stringCopy(newNode->process.args[i], args[i]);
     newNode->process.argv[i] = newNode->process.args[i];
   }
-    
-
-  //       int i = 0;
-  // while (i < argc)
-  // {
-  //   ncPrint(newNode->process.argv[i]);
-  //   i++;
-  // }
+  
 
   uint64_t processMemory = (uint64_t)allocMemory(DEFAULT_PROGRAM_SIZE);
   uint64_t sp = initProcess(processMemory + DEFAULT_PROGRAM_SIZE, ip, argc, newNode->process.argv);
   newNode->process.sp = sp;
   newNode->process.bp = processMemory + DEFAULT_PROGRAM_SIZE - 1;
   newNode->process.processMemory = processMemory;
+      newNode->process.stdin = stdin;
+    newNode->process.stdout = stdout;
 
   return node;
 }
 
-// typedef void (*TypeFunc)(uint64_t, char **);
 
-// void processWrapper(uint64_t ip, uint64_t argc, char argv[6][ARG_LENGTH]) {
-//    ((TypeFunc)ip)(argc, argv); 
-// }
 
 // Crea un proceso de prioridad 'priority' con ciertos argumentos
-uint32_t createProcess(uint64_t ip, uint8_t priority, uint64_t argc, char argv[6][ARG_LENGTH])
+uint32_t createProcess(uint64_t ip, uint8_t priority, uint64_t argc, char argv[6][ARG_LENGTH], fd * stdin, fd * stdout)
 {
   // El scheduler pasa a obtener el foreground si la prioridad del nuevo proceso es maxima y tengo mas procesos ademas de la shell
   int thisPid = pid;
-  // int i = 0;
-  // while (i < argc)
-  // {
-  //   ncPrint(argv[i]);
-  //   // stringCopy(args[i], argv[i]);
-  //   i++;
-  // }
 
-  scheduler->start = loadProcess(scheduler->start, pid++, priority, argc, argv, ip);
+  scheduler->start = loadProcess(scheduler->start, pid++, priority, argc, argv, ip, stdin, stdout);
 
   return thisPid;
 }
 
-uint32_t createProcessForUser(uint64_t ip, uint8_t priority, uint64_t argc, char *argv[])
+uint32_t createProcessForUser(uint64_t ip, uint8_t priority, uint64_t argc, char *argv[], fd * stdin, fd * stdout)
 {
   if (!userValidPriority(priority))
-    return -1; // el usuario no puede crear procesos con prioridad menor a 2 o mayor a 20
+    return -1; // el usuario no puede crear procesos con prioridad menor a 2 o mayor a 5
 
-  return createProcessWrapper(ip, priority, argc, argv);
+  return createProcessWrapper(ip, priority, argc, argv, stdin, stdout);
 }
 
 // Funcion auxiliar que copia el vector de argumentos a un arreglo (no hacemos malloc, hay limitaciones en la longitud y cantidad de argumentos)
-uint32_t createProcessWrapper(uint64_t ip, uint8_t priority, uint64_t argc, char *argv[])
+uint32_t createProcessWrapper(uint64_t ip, uint8_t priority, uint64_t argc, char *argv[], fd * stdin, fd * stdout)
 {
   int i = 0;
   char args[6][ARG_LENGTH];
@@ -253,7 +242,7 @@ uint32_t createProcessWrapper(uint64_t ip, uint8_t priority, uint64_t argc, char
     i++;
   }
 
-  return createProcess(ip, priority, argc, args);
+  return createProcess(ip, priority, argc, args, stdin, stdout);
 }
 
 // Es la funcion llamada desde assembler cada vez que ocurre una interrupcion de cualquier tipo (incluyendo timer tick). Recibe el stack pointer para saber desde donde retomar luego el contexto
@@ -277,10 +266,6 @@ uint64_t switchProcess(uint64_t sp)
   if (sp != NULL && scheduler->currentProcess->process.quantum > 0 && scheduler->currentProcess->process.pstate == 1)
   {
     scheduler->currentProcess->process.quantum--;
-    // ncPrint(" ");
-    // ncPrint("P");
-    // ncPrintDec(scheduler->currentProcess->process.priority);
-    // ncPrint(" ");
     return 0;
   }
 
@@ -325,15 +310,11 @@ static ListNode *deleteProcess(ListNode *node, uint32_t pid)
     node->process.pstate = 2;
     ListNode *aux = node->next;
     deleteProcessFromSemaphores(pid);
+    // deleteProcessFromPipes(pid);
+    // closeFd(node->process.stdin);
+    // closeFd(node->process.stdout);
     freeMemory((void *)node->process.processMemory);
     freeMemory((void *)node);
-
-    // int initialTicks = ticks_elapsed();
-    // ncPrint("Exiting pid ");
-    // ncPrintDec(pid);
-
-    // while (ticks_elapsed() < (initialTicks + 100))
-    //   ;
 
     return aux;
   }
@@ -344,18 +325,16 @@ static ListNode *deleteProcess(ListNode *node, uint32_t pid)
 
 void exitCurrentProcess()
 {
-  // uint32_t currentPid = scheduler->currentProcess->process.pid;
-  
-  // scheduler->start = deleteProcess(scheduler->start, scheduler->currentProcess->process.pid);
   killPid(scheduler->currentProcess->process.pid);
 }
 
 void killPid(uint32_t pid)
 {
   if (pid > 1) {
-
+    uint32_t currentPid = scheduler->currentProcess->process.pid;
     scheduler->start = deleteProcess(scheduler->start, pid);
-        if (scheduler->currentProcess->process.pid == pid) {
+
+      if (currentPid == pid) {
         forceScheduler();
     }
   }
@@ -380,7 +359,7 @@ static pcb *getPCB(ListNode *node, uint32_t pid)
 }
 
 // Cambia el estado del proceso de ready a sleep o viceversa
-void changeProcessState(uint32_t pid, uint8_t state)
+void changeProcessState(uint32_t pid, int state)
 {
   if (pid <= 1)
     return;
@@ -390,13 +369,13 @@ void changeProcessState(uint32_t pid, uint8_t state)
   if (pidPCB == NULL)
     return;
 
-  if (pidPCB->pstate == 1 && state == 0)
+  if (pidPCB->pstate == 1 && (state == 0 || state == -1))
   {
     pidPCB->pstate = 0;
     if (pid == scheduler->currentProcess->process.pid)
       forceScheduler();
   }
-  else if (state == 1)
+  else if (pidPCB->pstate == 0 && (state == 1 || state == -1))
     pidPCB->pstate = 1;
 }
 
@@ -415,9 +394,9 @@ void changeProcessPriorityForUser(uint32_t pid, uint8_t newPriority)
   changeProcessPriority(pid, newPriority);
 }
 
-void changeProcessStateForUser(uint32_t pid, uint8_t state)
+void changeProcessStateForUser(uint32_t pid, int state)
 {
-  if (!userValidPid(pid) || (state != READY && state != BLOCKED))
+  if (!userValidPid(pid) || (state != READY && state != BLOCKED && state != -1))
     return;
 
   changeProcessState(pid, state);
@@ -472,4 +451,14 @@ pcb *blockCurrentProcess()
 {
   scheduler->currentProcess->process.pstate = BLOCKED;
   return &scheduler->currentProcess->process;
+}
+
+fd *getStdin()
+{
+  return scheduler->currentProcess->process.stdin;
+}
+
+fd *getStdout()
+{
+  return scheduler->currentProcess->process.stdout;
 }

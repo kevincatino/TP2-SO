@@ -4,6 +4,8 @@
 #include <lib.h>
 #include "../include/time.h"
 #include "../include/semaphore.h"
+#include <pipe.h>
+#include <keyboardDriver.h>
 
 
 typedef uint64_t (*TypeSysCall)(uint64_t, uint64_t, uint64_t, uint64_t, uint64_t, uint64_t);
@@ -20,7 +22,8 @@ void loadSyscallNum(uint64_t rax) {
 }
 
 
-static TypeSysCall arraySysCalls[255] = {(TypeSysCall)&sys_read, (TypeSysCall)&sys_write, (TypeSysCall)&sys_get_char, (TypeSysCall)&sys_get_time, (TypeSysCall)&sys_screen_divition, (TypeSysCall)&sys_screen_clear, (TypeSysCall)&sys_memory_dump, (TypeSysCall)&sys_print_user, (TypeSysCall)&sys_print_sudoku_numbers, (TypeSysCall)&sys_print_in_screen_position, (TypeSysCall)&sys_screen_mode, (TypeSysCall)&sys_get_milli_seconds, (TypeSysCall)&sys_print_regs, (TypeSysCall)&allocMemory, (TypeSysCall)&freeMemory, (TypeSysCall)&createProcessForUser, (TypeSysCall)&ticks_elapsed, (TypeSysCall)&changeProcessPriorityForUser, (TypeSysCall)&changeProcessStateForUser, (TypeSysCall)&exitCurrentProcess, (TypeSysCall)&my_signal, (TypeSysCall)&my_wait, (TypeSysCall)&my_sem_open, (TypeSysCall)&my_sem_close, (TypeSysCall)&getCurrentPid, (TypeSysCall)&forceScheduler};
+static TypeSysCall arraySysCalls[255] = {(TypeSysCall)&sys_read, (TypeSysCall)&sys_write, (TypeSysCall)&sys_get_char, (TypeSysCall)&sys_get_time, (TypeSysCall)&sys_screen_divition, (TypeSysCall)&sys_screen_clear, (TypeSysCall)&sys_memory_dump, (TypeSysCall)&sys_print_user, (TypeSysCall)&sys_print_sudoku_numbers, (TypeSysCall)&sys_print_in_screen_position, (TypeSysCall)&sys_screen_mode, (TypeSysCall)&sys_get_milli_seconds, (TypeSysCall)&sys_print_regs, (TypeSysCall)&allocMemory, (TypeSysCall)&freeMemory, (TypeSysCall)&createProcessForUser, (TypeSysCall)&ticks_elapsed, (TypeSysCall)&changeProcessPriorityForUser, (TypeSysCall)&changeProcessStateForUser, (TypeSysCall)&exitCurrentProcess, (TypeSysCall)&my_signal, (TypeSysCall)&my_wait, (TypeSysCall)&my_sem_open, (TypeSysCall)&my_sem_close, (TypeSysCall)&getCurrentPid, (TypeSysCall)&forceScheduler, (TypeSysCall)&createFd, (TypeSysCall)&createPipe, (TypeSysCall)&openPipeId, (TypeSysCall)&closeFd, (TypeSysCall)&pipeWrite, (TypeSysCall)&pipeRead, (TypeSysCall)&killPid};
+
 
 
 uint64_t sysCallDispatcher(uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t rcx, uint64_t r8, uint64_t r9) {
@@ -32,43 +35,72 @@ uint64_t sysCallDispatcher(uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t rc
 }
 
 
-uint64_t sys_write(unsigned int fd, const char * buffer, uint64_t count){
+uint64_t sys_write(const char * buffer, uint64_t count){
     char color;
-    if (fd == 1) {
-        color = WHITE;
-    } else if (fd == 2) {
-        color = RED;
-    } else {
-        ncPrint("Error in file descriptor");
-        ncNewline();
-        return 0;
-    }
+
+    FileDes stdout = getStdout();
+
+    // if (fd == 1) {
+    //     color = WHITE;
+    // } else if (fd == 2) {
+    //     color = RED;
+    // } else {
+    //     ncPrint("Error in file descriptor");
+    //     ncNewline();
+    //     return 0;
+    // }
+
+    // ncPrintDec((uint64_t) stdout);
     
-    while (count-- && *buffer != 0) {
-        ncPrintCharColour(*buffer, color);
+    if (stdout == STDOUT) {
+        while (count-- && *buffer != 0) {
+        ncPrintCharColour(*buffer, WHITE);
         buffer++;
+    }
+    }
+    else {
+        pipeWrite(stdout, buffer);
     }
     return count == 0;
 }
 
 
-uint64_t sys_read(unsigned int fd, char* buffer, uint64_t count){
+uint64_t sys_read(char* buffer, uint64_t count){
 
     unsigned char *copyFromBuffer = getBuffer();
     int idx = 0;
 
-    if(fd == STDIN) {
-        for(idx = 0; copyFromBuffer[idx] != 0 && idx < count; idx++){
-            buffer[idx + 1] = copyFromBuffer[idx];
+    FileDes stdin = getStdin();
+
+    if(stdin == STDIN) {
+        // if (!copyFromBuffer[0])
+        //     getProcessIntoKBQueue();
+
+        // for(idx = 0; copyFromBuffer[idx] != 0 && idx < count; idx++){
+        //     buffer[idx + 1] = copyFromBuffer[idx];
+        // }
+        // buffer[idx] = '\0';
+        uint64_t i=0;
+        while (i < count) {
+            buffer[i] = getChar();
+            i++;
         }
+        return i;
     }
-    buffer[idx] = '\0';
+    else {
+        return pipeRead(stdin, buffer, count);
+    }
+    
+    
     return 0; 
 }
 
 
 char sys_get_char() {
-    return getChar();
+    char c;
+    sys_read(&c, 1);
+    return c;
+    // return getChar();
 }
 
 

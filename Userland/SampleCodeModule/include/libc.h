@@ -4,6 +4,8 @@
 #include <stdint.h>
 
 
+typedef struct fd * FileDes;
+
 
 #define FALSE 0
 #define TRUE 1
@@ -26,12 +28,15 @@
 #define READY 1
 #define BLOCKED 0
 
+#define STDIN ((FileDes) 0)
+#define STDOUT ((FileDes) 1)
 
-extern int sys_read(unsigned int fd, char* buffer, unsigned int buffercount);    
-extern int sys_write(unsigned int fd, char*buffer, unsigned int buffersize); 
+
+extern int sys_read(char* buffer, unsigned int buffercount);    
+extern int sys_write(char*buffer, unsigned int buffersize); 
 extern char sys_get_char();
 extern void sys_screen_divition();
-extern void sys_screen_clear(uint64_t mode);
+extern void sys_screen_clear();
 extern void sys_print_user(unsigned int fd, char*buffer, unsigned int buffersize); 
 extern void sys_get_screen_area(char* buffer, unsigned int buffersize); 
 extern void sys_print_sudoku_numbers(char* line, int position, int orientationX); 
@@ -40,7 +45,7 @@ extern void sys_screen_mode(uint16_t mode);
 extern uint64_t sys_get_milli_seconds(uint64_t time);
 extern void *sys_alloc(unsigned int to_alloc);
 extern void sys_free(void *to_free);
-extern int sys_create_process(uint64_t ip, uint8_t priority, uint64_t argc, char * argv[]);
+extern int sys_create_process(uint64_t ip, uint8_t priority, uint64_t argc, char * argv[], FileDes stdin, FileDes stdout);
 extern int sys_change_process_priority(uint32_t pid, uint8_t newPriority);
 extern int sys_change_process_state(uint32_t pid, uint8_t state);
 extern void sys_exit();
@@ -62,6 +67,20 @@ extern int sys_sem_wait(Semaphore sem);
 extern uint32_t sys_pid();
 
 extern void sys_yield();
+
+FileDes sys_createFd();
+
+extern int sys_createPipe(FileDes f0, FileDes f1);
+
+extern int sys_openPipeId(FileDes *fd, uint32_t id, int readwrite);
+
+extern void sys_closeFd(FileDes fd);
+
+extern int sys_pipeWrite(FileDes fd, char *string);
+
+extern int sys_pipeRead(FileDes fd, char *buffer, int limit);
+
+extern void sys_killPid(uint32_t pid);
 
 
 
@@ -100,7 +119,7 @@ void getScreenDivition();
 // Argumentos:
 //      1. La subpantalla a limpiar
 // ----------------------------------------------------------
-void clearScreen(uint64_t mode);
+void clearScreen();
 
 
 // ----------------------------------------------------------
@@ -404,6 +423,9 @@ int checkTabCount();
 // 		2. El string resultante
 // ----------------------------------------------------------
 void intToString(int num, char *str);
+
+
+void sleep(uint64_t seconds);
 
 
 #endif

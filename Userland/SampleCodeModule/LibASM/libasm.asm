@@ -26,6 +26,13 @@ GLOBAL sys_sem_signal
 GLOBAL sys_sem_wait
 GLOBAL sys_pid
 GLOBAL sys_yield
+GLOBAL sys_createFd
+GLOBAL sys_createPipe
+GLOBAL sys_openPipeId
+GLOBAL sys_closeFd
+GLOBAL sys_pipeWrite
+GLOBAL sys_pipeRead
+GLOBAL sys_killPid
 
 ;-----------------------------------------------------------
 ; sys_read - lee de file descriptor
@@ -403,6 +410,101 @@ sys_yield:
     mov rsp, rbp     
     pop rbp     
     ret
+
+sys_createFd:
+    push rbp     
+    mov rbp, rsp     
+    push rbx
+
+    mov rax, 26  
+    int 80h
+
+    pop rbx
+    mov rsp, rbp     
+    pop rbp     
+    ret
+
+sys_createPipe:
+    push rbp     
+    mov rbp, rsp     
+    push rbx
+
+    mov rax, 27  
+    int 80h
+
+    pop rbx
+    mov rsp, rbp     
+    pop rbp     
+    ret
+
+sys_openPipeId:
+    push rbp     
+    mov rbp, rsp     
+    push rbx
+
+    mov rax, 28  
+    int 80h
+
+    pop rbx
+    mov rsp, rbp     
+    pop rbp     
+    ret
+
+sys_closeFd:
+    push rbp     
+    mov rbp, rsp     
+    push rbx
+
+    mov rax, 29  
+    int 80h
+
+    pop rbx
+    mov rsp, rbp     
+    pop rbp     
+    ret
+
+sys_pipeWrite:
+    push rbp     
+    mov rbp, rsp     
+    push rbx
+
+    mov rax, 30  
+    int 80h
+
+    pop rbx
+    mov rsp, rbp     
+    pop rbp     
+    ret
+
+
+sys_pipeRead:
+    push rbp     
+    mov rbp, rsp     
+    push rbx
+
+    mov rax, 31  
+    int 80h
+
+    pop rbx
+    mov rsp, rbp     
+    pop rbp     
+    ret
+
+sys_killPid:
+    push rbp     
+    mov rbp, rsp     
+    push rbx
+
+    mov rax, 32  
+    int 80h
+
+    pop rbx
+    mov rsp, rbp     
+    pop rbp     
+    ret
+
+
+
 
 
 

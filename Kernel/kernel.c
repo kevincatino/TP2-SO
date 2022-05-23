@@ -71,7 +71,7 @@ int main() {
 
 	char * shell[] = {"Shell"};
 
-	createProcessWrapper(sampleCodeModuleAddress, 1, 1, shell);
+	createProcessWrapper((uint64_t) sampleCodeModuleAddress, 1, 1, shell, STDIN, STDOUT);
 
 	_sti();
 

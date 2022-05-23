@@ -1,9 +1,5 @@
 #include <libc.h>
-#include <clock.h>
-#include <chronometer.h>
-
 // Salida/Entrada
-#define STDOUT 1
 #define SIZE_CHAR 2
 #define MAX_BUFFER 100	
 
@@ -32,8 +28,8 @@ void getScreenDivition() {
 }
 
 
-void clearScreen(uint64_t mode) {
-	sys_screen_clear(mode);
+void clearScreen() {
+	sys_screen_clear();
 }
 
 
@@ -43,7 +39,7 @@ char getChar() {
 
 
 void putChar(char c) {
-    sys_write(STDOUT, &c, 1);
+    sys_write(&c, 1);
 }
 
 
@@ -77,7 +73,7 @@ void reverse(char *str, uint64_t len) {
 
 
 void print(char * string) {
-    sys_write(STDOUT, string, strlength(string));  
+    sys_write(string, strlength(string));  
 }
 
 
@@ -332,8 +328,8 @@ void readInput(char* inputBuffer, int maxSize, int flag) {
     char c;
     while (size < (maxSize - 1) && (c = getChar()) != '\n') {
 		if(flag != 0) {
-		    timeGame();
-			stopWatch();
+		    // timeGame();
+			// stopWatch();
 		}
         if (c) { 
             if (c != '\b' && c != '\t') {
@@ -371,4 +367,11 @@ void intToString(int num, char *str) {	// Ver como hacer para que imprima el 10
         num %= power;
     }
     *str='\0';
+}
+
+void sleep(uint64_t seconds) {
+	int ticks = sys_get_ticks();
+
+	while (sys_get_ticks() < (ticks + seconds * 18));
+
 }

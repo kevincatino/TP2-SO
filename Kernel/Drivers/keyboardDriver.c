@@ -1,6 +1,7 @@
 #include <keyboardDriver.h>
 #include <naiveConsole.h>
 #include <keyboardDriver.h>
+#include <scheduler.h>
 
 
 static int shiftFlag = 0;
@@ -57,7 +58,7 @@ void putCharInBuffer(char sc) {
 
 
 char getChar() {
-    // ncPrint("S");	
+    fd * stdin = getStdin();
     if (keyboardBufferSize <= 0) {
         getProcessIntoKBQueue();
         return 0;
@@ -69,9 +70,6 @@ char getChar() {
         }
     }
     keyboardBufferSize--;
-    if(key == '\t') {   // Entra aca, esta verificado ya
-        finalRegisters = registers;
-    }
     return key;
 }
 

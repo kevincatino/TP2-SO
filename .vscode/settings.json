@@ -19,6 +19,10 @@
         "lib.h": "c",
         "semaphore.h": "c",
         "stdint.h": "c",
-        "naiveconsole.h": "c"
+        "naiveconsole.h": "c",
+        "syscalldispatcher.h": "c",
+        "keyboarddriver.h": "c",
+        "test_lib.h": "c",
+        "shell.h": "c"
     }
 }

@@ -3,6 +3,10 @@
 
 #include <stdint.h>
 
+#define STDIN ((FileDes) 0)
+#define STDOUT ((FileDes) 1)
+
+
 void * memset(void * destination, int32_t character, uint64_t length);
 void * memcpy(void * destination, const void * source, uint64_t length);
 char * intToHexa(uint64_t num, char * str, int bytes);

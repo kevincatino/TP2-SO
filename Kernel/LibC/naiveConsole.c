@@ -296,44 +296,45 @@ void ncClearParticuarScreen(int startPosition, int count, int isLeft) {
 
 
 
-void ncClearScreen(uint64_t mode) {
+void ncClearScreen() {
 	uint8_t * auxCurrentVideo = currentVideo;
-	if(mode == GENERAL_SCREEN) { 	
-		ncClear();
-	} else if(mode == GAME_SCREEN_SL) {
-		int startSL = (width*2*5);
-		int count = GAME_SCREEN_DELETE_S;		// Cantidad de espacio que tiene la pantalla 
-		ncClearParticuarScreen(startSL, count, IS_LEFT_SCREEN);
-		currentVideo = auxCurrentVideo;
-		return;
-	} else if(mode == GAME_SCREEN_SR) {
-		int startSR = (width*2*5) + width + 2;
-		int count = GAME_SCREEN_DELETE_S;	
-		ncClearParticuarScreen(startSR, count, IS_RIGHT_SCREEN);
-		currentVideo = auxCurrentVideo;
-		return;
-	} else if(mode == GAME_SCREEN_IL) {
-		int startIL = (width*2*8);
-		int count = GAME_SCREEN_DELETE_I;	
-		ncClearParticuarScreen(startIL, count, IS_LEFT_SCREEN);
-		currentVideo = auxCurrentVideo;
-		return;
-	} else if(mode == GAME_SCREEN_IR) {
-		int startIR = (width*2*8) + width + 2;
-		int count = GAME_SCREEN_DELETE_I; 		
-		ncClearParticuarScreen(startIR, count, IS_RIGHT_SCREEN);
-		currentVideo = auxCurrentVideo;
-		return;
-	} else if(mode == GAMES_SCREEN) { 
-		int j;
-		for(j = 0; j < (width*GAME_SCREEN_DELETE_G); j++) {
-			video[j * 2] = ' ';
-		}
-		currentVideo = video;
-		return;
-	} else {
-		ncPrintStringColour("Invalid Screen", RED);
-	}
+	ncClear();
+	// if(mode == GENERAL_SCREEN) { 	
+	// 	ncClear();
+	// } else if(mode == GAME_SCREEN_SL) {
+	// 	int startSL = (width*2*5);
+	// 	int count = GAME_SCREEN_DELETE_S;		// Cantidad de espacio que tiene la pantalla 
+	// 	ncClearParticuarScreen(startSL, count, IS_LEFT_SCREEN);
+	// 	currentVideo = auxCurrentVideo;
+	// 	return;
+	// } else if(mode == GAME_SCREEN_SR) {
+	// 	int startSR = (width*2*5) + width + 2;
+	// 	int count = GAME_SCREEN_DELETE_S;	
+	// 	ncClearParticuarScreen(startSR, count, IS_RIGHT_SCREEN);
+	// 	currentVideo = auxCurrentVideo;
+	// 	return;
+	// } else if(mode == GAME_SCREEN_IL) {
+	// 	int startIL = (width*2*8);
+	// 	int count = GAME_SCREEN_DELETE_I;	
+	// 	ncClearParticuarScreen(startIL, count, IS_LEFT_SCREEN);
+	// 	currentVideo = auxCurrentVideo;
+	// 	return;
+	// } else if(mode == GAME_SCREEN_IR) {
+	// 	int startIR = (width*2*8) + width + 2;
+	// 	int count = GAME_SCREEN_DELETE_I; 		
+	// 	ncClearParticuarScreen(startIR, count, IS_RIGHT_SCREEN);
+	// 	currentVideo = auxCurrentVideo;
+	// 	return;
+	// } else if(mode == GAMES_SCREEN) { 
+	// 	int j;
+	// 	for(j = 0; j < (width*GAME_SCREEN_DELETE_G); j++) {
+	// 		video[j * 2] = ' ';
+	// 	}
+	// 	currentVideo = video;
+	// 	return;
+	// } else {
+	// 	ncPrintStringColour("Invalid Screen", RED);
+	// }
 	
 }
 

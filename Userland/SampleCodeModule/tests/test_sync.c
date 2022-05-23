@@ -74,9 +74,9 @@ void testSync() {
 
   for (i = 0; i <TOTAL_PAIR_PROCESSES; i++) {
     char *argv1[] = {"inc process with sem", "1", "1", "100"};
-    sys_create_process(&inc, 4, 4, argv1);
+    sys_create_process(&inc, 4, 4, argv1, STDIN, STDOUT);
     char *argv2[] = {"inc process with sem", "1", "-1", "100"};
-    sys_create_process(&inc, 4, 4, argv2);
+    sys_create_process(&inc, 4, 4, argv2, STDIN, STDOUT);
   }
 }
 
@@ -89,9 +89,9 @@ void testNoSync() {
 
   for (i = 0; i < TOTAL_PAIR_PROCESSES; i++) {
     char *argv1[] = {"inc process without sem", "0", "1", "100"};
-    sys_create_process(&inc, 4, 4, argv1);
+    sys_create_process(&inc, 4, 4, argv1, STDIN, STDOUT);
     char *argv2[] = {"inc process without sem", "0", "-1", "100"};
-   sys_create_process(&inc, 4, 4, argv2);
+   sys_create_process(&inc, 4, 4, argv2, STDIN, STDOUT);
   }
 }
 

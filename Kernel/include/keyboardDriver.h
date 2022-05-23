@@ -40,7 +40,7 @@ unsigned char* getBuffer();
 void putCharInBuffer(char sc);
 
 
-// Retorna la tecal correspondiente en el buffer y la elimina del mismo
+// // Retorna la tecal correspondiente en el buffer y la elimina del mismo
 char getChar();
 
 

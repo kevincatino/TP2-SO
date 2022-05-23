@@ -99,7 +99,7 @@ void ncPrintInScreenPosition(char* message, uint64_t position);
 // Argumentos:
 //      1. La pantalla a limpiar
 // ----------------------------------------------------------
-void ncClearScreen(uint64_t mode);
+void ncClearScreen();
 
 
 // ----------------------------------------------------------
