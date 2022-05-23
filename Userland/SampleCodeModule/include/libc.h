@@ -52,7 +52,6 @@ extern void sys_exit();
 extern uint64_t sys_get_ticks();
 
 extern void get_regs();
-extern uint64_t xchg(uint64_t * lock, uint64_t value);
 
 typedef struct Sem_T * Semaphore;
 

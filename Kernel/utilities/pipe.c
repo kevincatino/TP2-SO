@@ -133,7 +133,7 @@ void closeFd(fd *fd)
     if (fd->readwrite == WRITE)
         fd->pipe->writing = 0;
 
-    if (fd->readwrite == READ && !fd->pipe->writing || fd->readwrite == WRITE && !fd->pipe->reading)
+    if ((fd->readwrite == READ && !fd->pipe->writing) || (fd->readwrite == WRITE && !fd->pipe->reading))
     {
         deletePipe(fd->pipe);
         freeMemory(fd->pipe);
@@ -177,7 +177,7 @@ int pipeWrite(fd *fd, char *string)
 
 int pipeRead(fd *fd, char *buffer, int limit)
 {
-    ncPrint("");
+    // ncPrint("");
     if (fd->readwrite != READ)
         return -1;
 
@@ -190,7 +190,7 @@ int pipeRead(fd *fd, char *buffer, int limit)
     }
 
     int i = 0;
-    while (fd->pipe->readableBytes > 0)
+    while (i < limit && fd->pipe->readableBytes > 0)
     {
         fd->pipe->readableBytes--;
         if (fd->pipe->readIdx == DATA_SIZE)

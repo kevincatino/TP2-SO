@@ -186,7 +186,7 @@ void ncPrintStringColour(char * message, int colour) {
 
 // Division de pantalla
 void ncScreenDivition() {
-	ncClearScreen(GENERAL_SCREEN);
+	ncClearScreen();
 	ncPrintHeight();
 	ncPrintWidth();
 }
@@ -297,7 +297,6 @@ void ncClearParticuarScreen(int startPosition, int count, int isLeft) {
 
 
 void ncClearScreen() {
-	uint8_t * auxCurrentVideo = currentVideo;
 	ncClear();
 	// if(mode == GENERAL_SCREEN) { 	
 	// 	ncClear();

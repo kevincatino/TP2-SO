@@ -1,5 +1,4 @@
 #include <stdint.h>
-#include <string.h>
 #include <lib.h>
 #include <idtLoader.h>
 #include <moduleLoader.h>

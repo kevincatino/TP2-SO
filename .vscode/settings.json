@@ -23,6 +23,7 @@
         "syscalldispatcher.h": "c",
         "keyboarddriver.h": "c",
         "test_lib.h": "c",
-        "shell.h": "c"
+        "shell.h": "c",
+        "pipe.h": "c"
     }
 }

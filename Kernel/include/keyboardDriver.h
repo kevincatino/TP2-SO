@@ -23,10 +23,6 @@ extern int kbScanCode();
 // Detecta si hay algo en el buffer
 extern int kbDetection();
 
-
-extern uint64_t* get_regs();
-
-
 void keyboard_handler();
 
 // Me convierte del scanCode al char que corresponde
@@ -40,10 +36,8 @@ unsigned char* getBuffer();
 void putCharInBuffer(char sc);
 
 
-// // Retorna la tecal correspondiente en el buffer y la elimina del mismo
+// Retorna la tecal correspondiente en el buffer y la elimina del mismo
 char getChar();
 
-
-uint64_t* getRegs();
 
 #endif

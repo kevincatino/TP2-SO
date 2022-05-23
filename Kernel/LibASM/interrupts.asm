@@ -177,7 +177,7 @@ picSlaveMask:
 
 
 ;8254 Timer (Timer Tick)
-_irq00Handler:
+_irq00Handler: 
 	irqHandlerMaster 0
 
 ;Keyboard

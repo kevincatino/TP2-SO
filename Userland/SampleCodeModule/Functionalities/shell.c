@@ -8,12 +8,9 @@
 #define NULL ((void *)0)
 #define MAX_CMD_SIZE 10
 
-static uint64_t *registersCopy;
-
-char *commands[MAX_CMD_SIZE] = {"help", "clean", "mmTest", "syncTest", "loop", "kill"};
-void (*commandPointers[MAX_CMD_SIZE])(uint64_t, char **) = {helpMenu, clearScreen, memoryManagerTest, syncTest, loop, kill};
+char *commands[MAX_CMD_SIZE] = {"help", "clean", "mmTest", "syncTest", "loop", "kill", "cat"};
+void (*commandPointers[MAX_CMD_SIZE])(uint64_t, char **) = {helpMenu, clearScreen, memoryManagerTest, syncTest, loop, kill, cat};
 uint64_t commandsLength = sizeof(commands) / sizeof(commands[0]);
-
 
 void initializeShell()
 {
@@ -61,20 +58,22 @@ void managePipe(char *command[], uint64_t pipeIdx, uint64_t argSize)
     FileDes pipeWrite = sys_createFd();
     sys_createPipe(pipeRead, pipeWrite);
 
-    for (int i = 0; i < commandsLength; i++) {
-    	if (strCmp(p1, commands[i]))
-    		indexP1 = i;
-    	if (strCmp(p2, commands[i]))
-    		indexP2 = i;
+    for (int i = 0; i < commandsLength; i++)
+    {
+        if (strCmp(p1, commands[i]) == 0)
+            indexP1 = i;
+        if (strCmp(p2, commands[i]) == 0)
+            indexP2 = i;
     }
 
-    if (indexP1 == -1 || indexP2 == -1) {
-    	print("Command not found, try 'help'\n");
-    	return;
+    if (indexP1 == -1 || indexP2 == -1)
+    {
+        print("Command not found, try 'help'\n");
+        return;
     }
 
     sys_create_process((uint64_t)commandPointers[indexP1], 2, pipeIdx, command, STDIN, pipeWrite);
-    sys_create_process((uint64_t)commandPointers[indexP2], 2, argSize-pipeIdx-1, command + pipeIdx + 1, pipeRead, STDOUT);
+    sys_create_process((uint64_t)commandPointers[indexP2], 2, argSize - pipeIdx - 1, command + pipeIdx + 1, pipeRead, STDOUT);
 }
 
 int menuCommands(char *input)
@@ -82,25 +81,30 @@ int menuCommands(char *input)
     char *command[MAX_ARGUMENTS] = {NULL, NULL, NULL, NULL, NULL, NULL};
     int argSize = strtok(input, ' ', command, MAX_ARGUMENTS);
 
-    // int index = 0;
-    // while (index < argSize - 1)
-    // {
-    //     if (strCmp(command[index], "|"))
-    //     {
-    //         managePipe(command, index, argSize);
-    //         return TRUE;
-    //     }
-    //     index++;
+    int index = 0;
+    while (index < argSize - 1)
+    {
+        if (strCmp(command[index], "|") == 0)
+        {
+            managePipe(command, index, argSize);
+            return TRUE;
+        }
+        index++;
+    }
+
+    // for (int i = 0 ; i < argSize ; i++) {
+    //     print(command[i]);
     // }
+
     int i;
     for (i = 0; i < commandsLength; i++)
     {
         if (strCmp(command[0], commands[i]) == 0)
         {
             // print(commands[i]);
-            if (strCmp(command[argSize - 1], "&") == 0)
+            if (argSize > 1 && strCmp(command[argSize - 1], "&") == 0)
             {
-                sys_create_process((uint64_t)commandPointers[i], 2, argSize-1, command, STDIN, STDOUT);
+                sys_create_process((uint64_t)commandPointers[i], 2, argSize - 1, command, STDIN, STDOUT);
             }
             else
             {
@@ -108,7 +112,6 @@ int menuCommands(char *input)
             }
             return TRUE;
         }
-        
     }
 
     print("Invalid command, please enter a valid command. If you need help, write \'help\'.\n");
@@ -131,17 +134,6 @@ void helpMenu(uint64_t argc, char *argv)
     sys_exit();
 }
 
-
-
-
-void updateRegs(uint64_t *registers)
-{
-    for (int i = 0; i < 17; i++)
-    {
-        registersCopy[i] = registers[i];
-    }
-}
-
 void memoryManagerTest(uint64_t argc, char *argv[])
 {
     test_mm(argc, argv);
@@ -160,46 +152,71 @@ void syncTest(uint64_t argc, char *argv[])
     }
 }
 
-void kill(uint64_t argc, char * argv[]) {
-    if (argc < 2) {
+void kill(uint64_t argc, char *argv[])
+{
+    if (argc < 2)
+    {
         print("Es necesario ingresar el pid del proceso\n");
         sys_exit();
         return;
     }
 
-    uint32_t pid = (uint32_t) satoi(argv[1]);
+    uint32_t pid = (uint32_t)satoi(argv[1]);
 
     sys_killPid(pid);
+
+    sys_exit();
 }
 
+void loop(uint64_t argc, char *argv[])
+{
 
-void loop(uint64_t argc, char * argv[]) {
-
-    if (argc < 2) {
+    if (argc < 2)
+    {
         print("Es necesario ingresar el tiempo de loop\n");
         sys_exit();
         return;
     }
 
-	int64_t delay = satoi(argv[1]);
+    int64_t delay = satoi(argv[1]);
 
-	while(1) {
-		print("Loop from: ");
-		printNum(sys_pid());
-		putChar('\n');
-		sleep((uint64_t)delay);
-	}
+    while (1)
+    {
+        print("Loop from: ");
+        printNum(sys_pid());
+        putChar('\n');
+        sleep((uint64_t)delay);
+    }
     sys_exit();
 }
 
-// void cat(uint64_t argc, char * argv[]) {
-// 	char buffer[200];
-// 	while(getChar(buffer) > 0) {
-// 		print(buffer);
-// 		print("\n");
-// 	}
-// 	sys_exit(); 
-// }
+void cat(uint64_t argc, char *argv[])
+{
+    char buffer[200];
+    int i = 0;
+
+    if (argc == 1)
+    {
+        char c;
+        while ((c = getChar()) != 0)
+        {
+            // buffer[i++] = c;
+            // if (c == '\n')
+            // {
+            //     buffer[i] = 0;
+            //     print(buffer);
+            //     i = 0;
+            // }
+            putChar(c);
+        }
+    }
+    else
+    {
+        print(argv[1]);
+    }
+
+    sys_exit();
+}
 
 // void wc(uint64_t argc, char * argv[]) {
 // 	char buffer[200];

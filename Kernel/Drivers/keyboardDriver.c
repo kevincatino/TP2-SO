@@ -2,14 +2,13 @@
 #include <naiveConsole.h>
 #include <keyboardDriver.h>
 #include <scheduler.h>
+#include <pipe.h>
 
 
 static int shiftFlag = 0;
 static int mayusFlag = 0;
 static unsigned int keyboardBufferSize = 0;
 static unsigned char keyboardBuffer[MAX_SIZE];
-static uint64_t* registers;
-static uint64_t* finalRegisters;
 
 
 
@@ -23,9 +22,6 @@ void keyboard_handler() {
 
     while (kbDetection()) {
         scanCode = kbScanCode();
-        if(scanCode == TAB) {
-            registers = get_regs();
-        }
         if (scanCode == SHIFTL || scanCode == SHIFTR) {
             shiftFlag = 1;
         } else if (scanCode == SHIFTL_RELESED || scanCode == SHIFTR_RELESED) {
@@ -58,7 +54,7 @@ void putCharInBuffer(char sc) {
 
 
 char getChar() {
-    fd * stdin = getStdin();
+    // FileDes stdin = getStdin();
     if (keyboardBufferSize <= 0) {
         getProcessIntoKBQueue();
         return 0;
@@ -73,7 +69,3 @@ char getChar() {
     return key;
 }
 
-
-uint64_t* getRegs() {
-    return finalRegisters;
-}

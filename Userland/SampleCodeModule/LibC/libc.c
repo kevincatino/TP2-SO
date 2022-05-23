@@ -19,7 +19,7 @@ uint64_t strlength(char * string) {
 
 
 void userPrint(char * buffer) {
-	sys_print_user(STDOUT, buffer, strlength(buffer));
+	sys_print_user(1, buffer, strlength(buffer));
 }
 
 

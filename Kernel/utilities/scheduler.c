@@ -27,7 +27,7 @@ typedef struct Scheduler
 typedef struct KBNode
 {
   pcb *process;
-  struct WaitingNode *next;
+  struct KBNode *next;
 } KBNode;
 
 typedef struct WaitingForKBList
@@ -151,21 +151,24 @@ static ListNode *loadProcess(ListNode *node, uint32_t pid, uint8_t priority, int
     newNode->process.pstate = 1;
     newNode->process.priority = priority;
     newNode->process.quantum = getQuantum(priority);
-    for (int i = 0; i < argc; i++)
+    for (int i = 0; i < argc; i++) {
       stringCopy(newNode->process.args[i], args[i]);
+      newNode->process.argv[i] = newNode->process.args[i];
+    }
+      
     uint64_t processMemory = (uint64_t)allocMemory(DEFAULT_PROGRAM_SIZE);
 
     // initProcess es una funcion de assembler que inicia el proceso y devuelve el nuevo stackpointer. Los procesos por defecto son de 4K de tamanio.
     // todo: Usar y probar si anda forma de inicializar en una sola linea: ej newNode->p = {.sp = sp, etc.}
-    uint64_t sp = initProcess(processMemory + DEFAULT_PROGRAM_SIZE, ip, argc, newNode->process.args);
+    uint64_t sp = initProcess(processMemory + DEFAULT_PROGRAM_SIZE, ip, argc, newNode->process.argv);
     newNode->process.sp = sp;
     newNode->process.bp = processMemory + DEFAULT_PROGRAM_SIZE - 1;
     newNode->process.processMemory = processMemory;
     newNode->process.stdin = stdin;
     newNode->process.stdout = stdout;
 
-    ncPrint("stdout es ");
-    ncPrintDec(stdout);
+    // ncPrint("stdout es ");
+    // ncPrintDec(stdout);
 
     return newNode;
   }
@@ -263,7 +266,7 @@ uint64_t switchProcess(uint64_t sp)
   // ncPrintDec(scheduler->currentProcess->process.pid);
 
   // Si faltan ticks por correr, disminuimos el quantum y seguimos en el mismo proceso
-  if (sp != NULL && scheduler->currentProcess->process.quantum > 0 && scheduler->currentProcess->process.pstate == 1)
+  if (scheduler->currentProcess->process.quantum > 0 && scheduler->currentProcess->process.pstate == 1)
   {
     scheduler->currentProcess->process.quantum--;
     return 0;
@@ -422,7 +425,8 @@ void getProcessIntoKBQueue()
 
   if (kbList->size == 0)
   {
-    kbList->list = kbList->last = aux;
+    kbList->list = aux;
+    kbList->last = aux;
   }
   else
   {
@@ -442,7 +446,7 @@ void awakeProcessFromKBQueue()
 
   kbList->size--;
   kbList->list->process->pstate = READY;
-  KBNode *aux = kbList->list;
+  KBNode * aux = kbList->list;
   kbList->list = kbList->list->next;
   freeMemory(aux);
 }

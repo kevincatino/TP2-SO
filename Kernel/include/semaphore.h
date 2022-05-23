@@ -3,7 +3,6 @@
 
 #define MAX_PROCESSES 10
 #define MAX_SEMS 20
-#define NULL ((void *)0)
 
 typedef struct Sem_T * Semaphore;
 

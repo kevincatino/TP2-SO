@@ -3,11 +3,12 @@
 #include <scheduler.h>
 #include <the_memory_manager.h>
 #include "../include/semaphore.h"
+#include <lib.h>
 
 typedef struct Sem_T
 {
     uint32_t id;
-    uint8_t mutex;
+    uint64_t mutex;
     int value;
     pcb * waitingProcs[MAX_PROCESSES];
     uint32_t waitingProcQty;
@@ -15,7 +16,7 @@ typedef struct Sem_T
 
 
 Sem_T * sems[MAX_SEMS];
-uint8_t privSem = 0;
+uint64_t privSem = 0;
 uint32_t qty = 0;
 
 // retorna NULL si superamos la cantidad maxima de semaforos o si lo inicializamos en < 0.
@@ -151,5 +152,5 @@ static void deleteProcessFromSemaphore(Semaphore sem, uint32_t pid)
 void deleteProcessFromSemaphores(uint32_t pid)
 {
     for (int i = 0; i < qty; i++)
-        deleteProcessFromSemaphore(&sems[i], pid);
+        deleteProcessFromSemaphore(sems[i], pid);
 }
