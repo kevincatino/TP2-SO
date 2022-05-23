@@ -10,7 +10,7 @@ static void zero_division();
 static void opcode_exception();
 void printRegisters();
 uint64_t hexaToInt(char *s);
-int strlength(char * string);
+// int strlength(char * string);
 int power(int num, int p);
 
 
@@ -84,13 +84,13 @@ uint64_t hexaToInt(char *s) {
 	return rta;
 }
 
-int strlength(char * string) {
-	int i=0;
-	while(string[i]!=0) {
-		i++;
-	}
-	return i;
-}
+// int strlength(char * string) {
+// 	int i=0;
+// 	while(string[i]!=0) {
+// 		i++;
+// 	}
+// 	return i;
+// }
 
 int power(int num, int p) {
 	int res = 1;

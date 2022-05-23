@@ -99,7 +99,7 @@ void ncPrintBin(uint64_t value) {
 
 void ncPrintBase(uint64_t value, uint32_t base) {
     uintToBase(value, buffer, base);
-    ncPrint(buffer);
+    ncPrintStringColour(buffer, WHITE);
 }
 
 

@@ -22,6 +22,7 @@ void keyboard_handler() {
 
     while (kbDetection()) {
         scanCode = kbScanCode();
+        // ncPrintDec(scanCode);
         if (scanCode == SHIFTL || scanCode == SHIFTR) {
             shiftFlag = 1;
         } else if (scanCode == SHIFTL_RELESED || scanCode == SHIFTR_RELESED) {
@@ -29,11 +30,16 @@ void keyboard_handler() {
         } else if (scanCode == CAPSLOCKS) {
             mayusFlag = !mayusFlag;
         }
-        if (scanCode >= 0 && scanCode < KEYS && scanCodeToChar[scanCode][0] != 0) {
+        else if (scanCode == 129) {
+            killForeground();
+        }
+        if (scanCode > 1 && scanCode < KEYS && scanCodeToChar[scanCode][0] != 0) {
             putCharInBuffer(scanToChar(scanCode));
         }
+                        awakeProcessFromKBQueue();
     }
-    awakeProcessFromKBQueue();
+
+    
 }
 
 char scanToChar(int scancode) {

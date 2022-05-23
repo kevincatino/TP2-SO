@@ -15,6 +15,8 @@ void cat(uint64_t argc, char * argv[]);
 void filter(uint64_t argc,char * argv[]);
 void wc(uint64_t argc, char * argv[]);
 void block(uint64_t argc, char * argv[]);
+void clean(uint64_t argc, char *argv[]);
+void ps(uint64_t argc, char * argv[]);
 
 
 void initializeShell();

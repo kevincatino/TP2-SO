@@ -9,8 +9,8 @@
 #define NULL ((void *)0)
 #define MAX_CMD_SIZE 20
 
-char *commands[MAX_CMD_SIZE] = {"help", "clean", "mmTest", "syncTest", "loop", "kill", "cat", "wc", "filter", "phylo", "block"};
-void (*commandPointers[MAX_CMD_SIZE])(uint64_t, char **) = {helpMenu, clearScreen, memoryManagerTest, syncTest, loop, kill, cat, wc, filter, phylo, block};
+char *commands[MAX_CMD_SIZE] = {"help", "clean", "mmTest", "syncTest", "loop", "kill", "cat", "wc", "filter", "phylo", "block", "ps"};
+void (*commandPointers[MAX_CMD_SIZE])(uint64_t, char **) = {helpMenu, clean, memoryManagerTest, syncTest, loop, kill, cat, wc, filter, phylo, block, ps};
 uint64_t commandsLength = sizeof(commands) / sizeof(commands[0]);
 
 void initializeShell()
@@ -74,7 +74,7 @@ void managePipe(char *command[], uint64_t pipeIdx, uint64_t argSize)
     }
 
     sys_create_process((uint64_t)commandPointers[indexP1], 2, pipeIdx, command, STDIN, pipeWrite);
-    sys_create_process((uint64_t)commandPointers[indexP2], 2, argSize - pipeIdx - 1, command + pipeIdx + 1, pipeRead, STDOUT);
+    sys_create_process((uint64_t)commandPointers[indexP2], 1, argSize - pipeIdx - 1, command + pipeIdx + 1, pipeRead, STDOUT);
 }
 
 int menuCommands(char *input)
@@ -93,23 +93,21 @@ int menuCommands(char *input)
         index++;
     }
 
-    // for (int i = 0 ; i < argSize ; i++) {
-    //     print(command[i]);
-    // }
 
     int i;
     for (i = 0; i < commandsLength; i++)
     {
         if (strCmp(command[0], commands[i]) == 0)
         {
-            // print(commands[i]);
             if (argSize > 1 && strCmp(command[argSize - 1], "&") == 0)
             {
                 sys_create_process((uint64_t)commandPointers[i], 2, argSize - 1, command, STDIN, STDOUT);
             }
             else
             {
-                (commandPointers[i])(argSize, command);
+                // print("my pid is ");
+                // printNum(sys_pid());
+                sys_create_process((uint64_t)commandPointers[i], 1, argSize, command, STDIN, STDOUT);
             }
             return TRUE;
         }
@@ -135,6 +133,12 @@ void helpMenu(uint64_t argc, char *argv)
     sys_exit();
 }
 
+void clean(uint64_t argc, char *argv[])
+{
+    clearScreen();
+    sys_exit();
+}
+
 void memoryManagerTest(uint64_t argc, char *argv[])
 {
     test_mm(argc, argv);
@@ -151,6 +155,7 @@ void syncTest(uint64_t argc, char *argv[])
     {
         testNoSync();
     }
+    sys_exit();
 }
 
 void kill(uint64_t argc, char *argv[])
@@ -256,6 +261,11 @@ void wc(uint64_t argc, char * argv[]) {
 	print("Cantidad de lineas leidas: ");
 	printNum(n);
 	putChar('\n');
+	sys_exit();
+}
+
+void ps(uint64_t argc, char * argv[]) {
+	sys_ps();
 	sys_exit();
 }
 

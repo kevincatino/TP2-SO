@@ -2,6 +2,8 @@
 #include <stdio.h>
 #include "test_util.h"
 #include "syscall.h"
+#include <libc.h>
+#include <stdint.h>
 
 #define TOTAL_PAIR_PROCESSES 2
 
@@ -9,8 +11,7 @@ void testNoSync();
 void testSync();
 
 
-#include <libc.h>
-#include <stdint.h>
+
 
 #define SEM_ID 10
 

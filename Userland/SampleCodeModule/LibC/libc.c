@@ -43,6 +43,7 @@ void putChar(char c) {
 }
 
 
+
 void printSudokuNumbers(char* line, uint64_t position, uint64_t orientationX) {
 	sys_print_sudoku_numbers(line, position, orientationX);
 }

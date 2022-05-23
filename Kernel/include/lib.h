@@ -20,5 +20,7 @@ void forceScheduler(); // todo: Implementar funcion en assembler
 
 extern uint64_t xchg(uint64_t * lock, uint64_t value);
 
+uint64_t strlength(char * string);
+
 
 #endif

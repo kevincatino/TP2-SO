@@ -4,6 +4,7 @@
 #include "../include/time.h"
 #include "../include/semaphore.h"
 #include <scheduler.h>
+#include <lib.h>
 
 #define QUANTUM 2
 #define PRIORITY_QUANTUM 5
@@ -106,9 +107,9 @@ static int8_t userValidPid(int8_t pid)
   return pid >= 2;
 }
 
-static int8_t userValidPriority(int8_t priority)
+static int8_t userValidPriority(uint8_t priority)
 {
-  return priority >= 2 && priority <= 5;
+  return priority >= 1 && priority <= 5;
 }
 
 void initScheduler()
@@ -151,6 +152,7 @@ static ListNode *loadProcess(ListNode *node, uint32_t pid, uint8_t priority, int
     newNode->process.pstate = 1;
     newNode->process.priority = priority;
     newNode->process.quantum = getQuantum(priority);
+    newNode->process.waitingPid = 0;
     for (int i = 0; i < argc; i++) {
       stringCopy(newNode->process.args[i], args[i]);
       newNode->process.argv[i] = newNode->process.args[i];
@@ -166,6 +168,7 @@ static ListNode *loadProcess(ListNode *node, uint32_t pid, uint8_t priority, int
     newNode->process.processMemory = processMemory;
     newNode->process.stdin = stdin;
     newNode->process.stdout = stdout;
+    newNode->process.waitingPid = 0;
 
     // ncPrint("stdout es ");
     // ncPrintDec(stdout);
@@ -193,6 +196,7 @@ static ListNode *loadProcess(ListNode *node, uint32_t pid, uint8_t priority, int
   newNode->process.pstate = 1; // por defecto pstate = 1 = ready
   newNode->process.priority = priority;
   newNode->process.quantum = getQuantum(priority);
+  newNode->process.waitingPid = 0;
   // Copio los argumentos al nodo creado
   for (int i = 0; i < argc; i++) {
     stringCopy(newNode->process.args[i], args[i]);
@@ -221,13 +225,18 @@ uint32_t createProcess(uint64_t ip, uint8_t priority, uint64_t argc, char argv[6
 
   scheduler->start = loadProcess(scheduler->start, pid++, priority, argc, argv, ip, stdin, stdout);
 
+    if (thisPid != 1 && priority == 1) {
+      changeProcessState(1, BLOCKED);
+  }
+
   return thisPid;
 }
+
 
 uint32_t createProcessForUser(uint64_t ip, uint8_t priority, uint64_t argc, char *argv[], fd * stdin, fd * stdout)
 {
   if (!userValidPriority(priority))
-    return -1; // el usuario no puede crear procesos con prioridad menor a 2 o mayor a 5
+    return -1; // el usuario no puede crear procesos con prioridad menor a 1 o mayor a 5
 
   return createProcessWrapper(ip, priority, argc, argv, stdin, stdout);
 }
@@ -310,6 +319,9 @@ static ListNode *deleteProcess(ListNode *node, uint32_t pid)
 
   if (node->process.pid == pid)
   {
+    if (node->process.priority == 1) {
+      changeProcessState(1, READY);
+    }
     node->process.pstate = 2;
     ListNode *aux = node->next;
     deleteProcessFromSemaphores(pid);
@@ -335,6 +347,10 @@ void killPid(uint32_t pid)
 {
   if (pid > 1) {
     uint32_t currentPid = scheduler->currentProcess->process.pid;
+
+      
+
+
     scheduler->start = deleteProcess(scheduler->start, pid);
 
       if (currentPid == pid) {
@@ -344,10 +360,6 @@ void killPid(uint32_t pid)
     
 }
 
-void printProcessList()
-{
-  // todo: implementar
-}
 
 // Retorna el contexto de un proceso a partir de su pid
 static pcb *getPCB(ListNode *node, uint32_t pid)
@@ -361,11 +373,36 @@ static pcb *getPCB(ListNode *node, uint32_t pid)
   return getPCB(node->next, pid);
 }
 
+void printProcessList()
+{
+  ncPrintStringColour("Name    PID    Priority     SP          BP         Type         State\n", WHITE);
+  ListNode *aux = scheduler->start;
+  while (aux != NULL)
+
+  {
+    ncPrintStringColour(aux->process.args[0], WHITE);
+    for (int i = strlength(aux->process.args[0]); i < 9; i++)
+      ncPrintStringColour(" ", WHITE);
+    ncPrintDec(aux->process.pid);
+    ncPrintStringColour("        ", WHITE);
+    ncPrintDec(aux->process.priority);
+    ncPrintStringColour("        ", WHITE);
+    ncPrintHex(aux->process.sp);
+    ncPrintStringColour("     ", WHITE);
+    ncPrintHex(aux->process.bp);
+    ncPrintStringColour("     ", WHITE);
+    ncPrintStringColour(aux->process.priority == 1 ? "Foreground" : "Background", WHITE);
+    ncPrintStringColour("     ", WHITE);
+    ncPrintStringColour(aux->process.pstate ? "Ready" : "Blocked", WHITE);
+    ncPrintStringColour("\n", WHITE);
+    aux = aux->next;
+  }
+}
+
 // Cambia el estado del proceso de ready a sleep o viceversa
 void changeProcessState(uint32_t pid, int state)
 {
-  if (pid <= 1)
-    return;
+
 
   pcb *pidPCB = getPCB(scheduler->start, pid);
 
@@ -380,6 +417,16 @@ void changeProcessState(uint32_t pid, int state)
   }
   else if (pidPCB->pstate == 0 && (state == 1 || state == -1))
     pidPCB->pstate = 1;
+}
+
+void killForeground() {
+  ListNode * node = scheduler->start;
+  while(node->next != NULL && (node->process.pid == 1 || node->process.priority != 1)) {
+    node = node->next;
+  }
+  if (node == NULL)
+    return;
+  killPid(node->process.pid);
 }
 
 // Cambia la prioridad de un proceso y lo reordena en la lista de prioridades

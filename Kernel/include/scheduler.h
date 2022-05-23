@@ -25,6 +25,7 @@ typedef struct pcb {
   uint64_t bp; // base pointer
   uint8_t quantum;
   uint64_t processMemory;
+  uint32_t waitingPid;
 
   fd * stdin;
   fd * stdout;
@@ -44,6 +45,8 @@ typedef struct pipeData
 
 
 void initScheduler();
+
+void printProcessList();
 
 uint64_t switchProcess(uint64_t sp);
 
@@ -80,5 +83,7 @@ pcb *blockCurrentProcess();
 fd *getStdin();
 
 fd *getStdout();
+
+void killForeground();
 
 #endif

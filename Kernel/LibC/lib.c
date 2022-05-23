@@ -91,5 +91,13 @@ void reverse(char *str, int len) {
 	}
 }
 
+uint64_t strlength(char * string) {
+	uint64_t i=0;
+	while(string[i]!=0) {
+		i++;
+	}
+	return i;
+}
+
 
 
