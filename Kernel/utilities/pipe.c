@@ -155,7 +155,7 @@ int pipeWrite(fd *fd, char *string)
     int i = 0;
     while (string[i])
     {
-        if (fd->pipe->readableBytes == DATA_SIZE)
+        while (fd->pipe->readableBytes == DATA_SIZE)
         {
             fd->pipe->waitingPCB = blockCurrentProcess();
             forceScheduler();
@@ -177,14 +177,19 @@ int pipeWrite(fd *fd, char *string)
 
 int pipeRead(fd *fd, char *buffer, int limit)
 {
-    // ncPrint("");
+    
     if (fd->readwrite != READ)
         return -1;
 
-    if (fd->pipe->readableBytes == 0)
+        
+
+    while (fd->pipe->readableBytes == 0)
     {
-        if (!fd->pipe->writing)
+        // ncPrint("a");
+        if (!fd->pipe->writing) {
             return 0;
+        }
+            
         fd->pipe->waitingPCB = blockCurrentProcess();
         forceScheduler();
     }

@@ -7,7 +7,7 @@
 #define LOAD_GAME 0
 #define CONTINUE_GAME 1
 #define NULL ((void *)0)
-#define MAX_CMD_SIZE 10
+#define MAX_CMD_SIZE 20
 
 char *commands[MAX_CMD_SIZE] = {"help", "clean", "mmTest", "syncTest", "loop", "kill", "cat", "wc", "filter", "phylo", "block"};
 void (*commandPointers[MAX_CMD_SIZE])(uint64_t, char **) = {helpMenu, clearScreen, memoryManagerTest, syncTest, loop, kill, cat, wc, filter, phylo, block};
@@ -247,7 +247,7 @@ void filter(uint64_t argc,char * argv[]) {
 void wc(uint64_t argc, char * argv[]) {
 	int n = 0;
     char c = 0;
-	while ((c=getChar()) != 0)
+	while ((c = getChar()) != 0)
 		if(c == '\n') {
             n++;
         }

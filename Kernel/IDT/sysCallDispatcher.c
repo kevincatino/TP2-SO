@@ -61,6 +61,7 @@ uint64_t sys_write(char *buffer, uint64_t count)
     else
     {
         // ncPrintStringColour("Writing on pipe\n", WHITE);
+        // ncPrint(buffer);
         buffer[count] = 0;
         pipeWrite(stdout, buffer);
     }
@@ -90,11 +91,14 @@ uint64_t sys_read(char *buffer, uint64_t count)
         }
         else
         {
-            pipeRead(stdin, &buffer[i], 1);
+            if(pipeRead(stdin, &buffer[i], 1) == 0)
+                return i;
+            // ncPrintChar(buffer[i]);
+            // ncPrintChar(' ');
         }
 
-        if (buffer[i] == 0)
-            return i;
+        // if (buffer[i] == 0)
+        //     return i;
 
         i++;
     }
@@ -105,11 +109,14 @@ uint64_t sys_read(char *buffer, uint64_t count)
 char sys_get_char()
 {
     char c;
-    sys_read(&c, 1);
+    if(sys_read(&c, 1) == 0)
+        return 0;
+
+    return c;
     // ncPrint("retorno ");
     // ncPrintDec(c);
     // ncPrint(" ");
-    return c;
+
 }
 
 uint64_t sys_get_time(uint64_t mode)
