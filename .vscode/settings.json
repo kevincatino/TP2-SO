@@ -24,6 +24,7 @@
         "keyboarddriver.h": "c",
         "test_lib.h": "c",
         "shell.h": "c",
-        "pipe.h": "c"
+        "pipe.h": "c",
+        "phylo.h": "c"
     }
 }

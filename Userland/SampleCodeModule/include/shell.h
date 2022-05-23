@@ -12,6 +12,9 @@ void syncTest(uint64_t argc, char * argv[]);
 void loop(uint64_t argc, char * argv[]);
 void kill(uint64_t argc, char * argv[]);
 void cat(uint64_t argc, char * argv[]);
+void filter(uint64_t argc,char * argv[]);
+void wc(uint64_t argc, char * argv[]);
+void block(uint64_t argc, char * argv[]);
 
 
 void initializeShell();

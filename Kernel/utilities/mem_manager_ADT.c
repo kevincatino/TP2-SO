@@ -5,10 +5,11 @@
 #include "../include/mem_manager_ADT.h"
 #include <stdint.h>
 #include <naiveConsole.h>
+#include <lib.h>
 
 // Source: https://github.com/Infineon/freertos/blob/master/Source/portable/MemMang/heap_2.c
 
-#define NULL ((void *) 0)
+
 
 typedef struct MemoryBlock {
 	struct MemoryBlock *pnextFreeBlock;

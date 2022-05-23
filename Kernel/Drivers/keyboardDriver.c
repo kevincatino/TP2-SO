@@ -55,9 +55,8 @@ void putCharInBuffer(char sc) {
 
 char getChar() {
     // FileDes stdin = getStdin();
-    if (keyboardBufferSize <= 0) {
+    while (keyboardBufferSize <= 0) {
         getProcessIntoKBQueue();
-        return 0;
     }
     char key = keyboardBuffer[0];
     if (keyboardBufferSize > 0) {	

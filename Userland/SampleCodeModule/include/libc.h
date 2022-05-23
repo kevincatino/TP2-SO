@@ -30,6 +30,7 @@ typedef struct fd * FileDes;
 
 #define STDIN ((FileDes) 0)
 #define STDOUT ((FileDes) 1)
+#define NULL ((void *) 0)
 
 
 extern int sys_read(char* buffer, unsigned int buffercount);    
@@ -47,7 +48,7 @@ extern void *sys_alloc(unsigned int to_alloc);
 extern void sys_free(void *to_free);
 extern int sys_create_process(uint64_t ip, uint8_t priority, uint64_t argc, char * argv[], FileDes stdin, FileDes stdout);
 extern int sys_change_process_priority(uint32_t pid, uint8_t newPriority);
-extern int sys_change_process_state(uint32_t pid, uint8_t state);
+extern int sys_change_process_state(uint32_t pid, int state);
 extern void sys_exit();
 extern uint64_t sys_get_ticks();
 
@@ -80,6 +81,9 @@ extern int sys_pipeWrite(FileDes fd, char *string);
 extern int sys_pipeRead(FileDes fd, char *buffer, int limit);
 
 extern void sys_killPid(uint32_t pid);
+
+
+char* strCpy(char* destination, const char* source);
 
 
 
@@ -397,7 +401,7 @@ int power(int num, int p);
 // Retorna:
 //     el arrayIndex donde se dejo de copiar
 // ----------------------------------------------------------
-int strtok(char *s, char delim, char *array[], int arraySize);
+int strtok(char *s, char * delim, char *array[], int arraySize);
 
 
 // ----------------------------------------------------------

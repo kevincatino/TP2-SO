@@ -5,6 +5,7 @@
 
 #define STDIN ((FileDes) 0)
 #define STDOUT ((FileDes) 1)
+#define NULL ((void *) 0)
 
 
 void * memset(void * destination, int32_t character, uint64_t length);

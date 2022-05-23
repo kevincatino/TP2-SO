@@ -2,14 +2,15 @@
 #include <libc.h>
 #include <test_lib.h>
 #include <test_util.h>
+#include <phylo.h>
 
 #define LOAD_GAME 0
 #define CONTINUE_GAME 1
 #define NULL ((void *)0)
 #define MAX_CMD_SIZE 10
 
-char *commands[MAX_CMD_SIZE] = {"help", "clean", "mmTest", "syncTest", "loop", "kill", "cat"};
-void (*commandPointers[MAX_CMD_SIZE])(uint64_t, char **) = {helpMenu, clearScreen, memoryManagerTest, syncTest, loop, kill, cat};
+char *commands[MAX_CMD_SIZE] = {"help", "clean", "mmTest", "syncTest", "loop", "kill", "cat", "wc", "filter", "phylo", "block"};
+void (*commandPointers[MAX_CMD_SIZE])(uint64_t, char **) = {helpMenu, clearScreen, memoryManagerTest, syncTest, loop, kill, cat, wc, filter, phylo, block};
 uint64_t commandsLength = sizeof(commands) / sizeof(commands[0]);
 
 void initializeShell()
@@ -79,7 +80,7 @@ void managePipe(char *command[], uint64_t pipeIdx, uint64_t argSize)
 int menuCommands(char *input)
 {
     char *command[MAX_ARGUMENTS] = {NULL, NULL, NULL, NULL, NULL, NULL};
-    int argSize = strtok(input, ' ', command, MAX_ARGUMENTS);
+    int argSize = strtok(input, " ", command, MAX_ARGUMENTS);
 
     int index = 0;
     while (index < argSize - 1)
@@ -192,7 +193,6 @@ void loop(uint64_t argc, char *argv[])
 
 void cat(uint64_t argc, char *argv[])
 {
-    char buffer[200];
     int i = 0;
 
     if (argc == 1)
@@ -200,59 +200,93 @@ void cat(uint64_t argc, char *argv[])
         char c;
         while ((c = getChar()) != 0)
         {
-            // buffer[i++] = c;
-            // if (c == '\n')
-            // {
-            //     buffer[i] = 0;
-            //     print(buffer);
-            //     i = 0;
-            // }
             putChar(c);
         }
     }
     else
-    {
-        print(argv[1]);
+    {   
+        char string[MAX_BUFFER];
+        char * lines[MAX_CMD_SIZE];
+        
+        strCpy(string, argv[1]);
+        int lineCount = strtok(string, "\\n", lines, MAX_CMD_SIZE);
+        int i;
+        for (i = 0 ; i < lineCount ; i++) {
+            print(lines[i]);
+            putChar('\n');
+        }
     }
 
     sys_exit();
 }
 
-// void wc(uint64_t argc, char * argv[]) {
-// 	char buffer[200];
-// 	int n = 0;
-// 	while (getChar(buffer) > 0)
-// 		n++;
+void filter(uint64_t argc,char * argv[]) {
+	char c;
+  while((c = getChar()) != 0) {
+    int i = 0;
+			switch (c) {
+				case 'a':
+				case 'e':
+				case 'i':
+				case 'o':
+				case 'u':
+				case 'A':
+				case 'E':
+				case 'I':
+				case 'O':
+				case 'U':
+					break;
+				default:
+					putChar(c);
+			}
+			i++;
+	}
+	sys_exit();
+}
 
-// 	print("Cantidad de lineas leidas: ");
-// 	printNum(n);
-// 	print("\n");
-// 	sys_exit();
-// }
+void wc(uint64_t argc, char * argv[]) {
+	int n = 0;
+    char c = 0;
+	while ((c=getChar()) != 0)
+		if(c == '\n') {
+            n++;
+        }
+            
 
-// void filter(uint64_t argc,char * argv[]) {
-// 	char buffer[200];
-//   while(getChar(buffer) > 0) {
-//     int i = 0;
-// 		while (buffer[i]) {
-// 			switch (buffer[i]) {
-// 				case 'a':
-// 				case 'e':
-// 				case 'i':
-// 				case 'o':
-// 				case 'u':
-// 				case 'A':
-// 				case 'E':
-// 				case 'I':
-// 				case 'O':
-// 				case 'U':
-// 					break;
-// 				default:
-// 					putChar(buffer[i]);
-// 			}
-// 			i++;
-// 		}
-//     print("\n");
-// 	}
-// 	sys_exit();
-// }
+	print("Cantidad de lineas leidas: ");
+	printNum(n);
+	putChar('\n');
+	sys_exit();
+}
+
+void block(uint64_t argc, char * argv[]) {
+	if (argc == 1) {
+        print("Es necesario el pid del proceso");
+        sys_exit();
+        return;
+    }
+
+    uint32_t pid = (uint32_t)satoi(argv[1]);
+
+    sys_change_process_state(pid, -1);
+
+	sys_exit();
+}
+
+void nice(uint64_t argc, char * argv[]) {
+    	if (argc <= 2) {
+        print("Es necesario el pid del proceso");
+        sys_exit();
+        return;
+    }
+
+    uint32_t pid = (uint32_t)satoi(argv[1]);
+
+    uint32_t priority = (uint32_t)satoi(argv[2]);
+
+    sys_change_process_priority(pid, priority);
+
+	sys_exit();
+}
+
+

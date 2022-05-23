@@ -73,18 +73,19 @@ uint64_t sys_read(char *buffer, uint64_t count)
     // unsigned char *copyFromBuffer = getBuffer();
 
     FileDes stdin = getStdin();
-    pcb *currentProcess = getCurrentProcess();
-    if (currentProcess->pid > 1 && stdin == STDIN)
-    {
-        buffer[0] = 0;
-        return 0;
-    }
+    // pcb *currentProcess = getCurrentProcess();
+    // if (currentProcess->pid > 1 && stdin == STDIN)
+    // {
+    //     buffer[0] = 0;
+    //     return 0;
+    // }
 
     uint64_t i = 0;
     while (i < count)
     {
         if (stdin == STDIN)
         {
+            // ncPrint("Leo de stdin");
             buffer[i] = getChar();
         }
         else
@@ -105,6 +106,9 @@ char sys_get_char()
 {
     char c;
     sys_read(&c, 1);
+    // ncPrint("retorno ");
+    // ncPrintDec(c);
+    // ncPrint(" ");
     return c;
 }
 

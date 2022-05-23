@@ -299,22 +299,32 @@ int power(int num, int p) {
 	}
 	return num*res;
 }
+static int stringsMatch(char * s1, char * toMatch) {
+	while (*toMatch) {
+		if (*toMatch != *s1)
+			return 0;
+		toMatch++;
+		s1++;
+	}
+	return 1;
+}
 
-
-int strtok(char *s, char delim, char *array[], int arraySize) {
+int strtok(char *s, char * delim, char *array[], int arraySize) {
 	int arrayIndex = 0;
 	if (*s != delim && *s != '\0')
 		array[arrayIndex++] = s;
 	while (*s != '\0')
 	{
-		if (*s == delim)
+
+		if (stringsMatch(s, delim))
 		{
 			*s = 0;
-			if (*(s + 1) != delim && (*(s + 1) != '\0'))
+			int delimLen = strlength(delim);
+			if (*(s + delimLen) != delim && (*(s + delimLen) != '\0'))
 			{
 				if (arrayIndex >= arraySize)
 					return arrayIndex;
-				array[arrayIndex++] = s + 1;
+				array[arrayIndex++] = s + delimLen;
 			}
 		}
 		s++;
@@ -374,4 +384,30 @@ void sleep(uint64_t seconds) {
 
 	while (sys_get_ticks() < (ticks + seconds * 18));
 
+}
+
+char* strCpy(char* destination, const char* source)
+{
+    // return if no memory is allocated to the destination
+    if (destination == 0) {
+        return 0;
+    }
+ 
+    // take a pointer pointing to the beginning of the destination string
+    char *ptr = destination;
+ 
+    // copy the C-string pointed by source into the array
+    // pointed by destination
+    while (*source != '\0')
+    {
+        *destination = *source;
+        destination++;
+        source++;
+    }
+ 
+    // include the terminating null character
+    *destination = '\0';
+ 
+    // the destination is returned by standard `strcpy()`
+    return ptr;
 }

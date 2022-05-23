@@ -8,7 +8,6 @@
 #define READY 1
 #define BLOCKED 0
 #define ARG_LENGTH 25
-#define NULL ((void*) 0)
 
 typedef struct fd
 {

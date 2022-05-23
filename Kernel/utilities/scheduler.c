@@ -313,9 +313,9 @@ static ListNode *deleteProcess(ListNode *node, uint32_t pid)
     node->process.pstate = 2;
     ListNode *aux = node->next;
     deleteProcessFromSemaphores(pid);
-    // deleteProcessFromPipes(pid);
-    // closeFd(node->process.stdin);
-    // closeFd(node->process.stdout);
+    deleteProcessFromPipes(pid);
+    closeFd(node->process.stdin);
+    closeFd(node->process.stdout);
     freeMemory((void *)node->process.processMemory);
     freeMemory((void *)node);
 
