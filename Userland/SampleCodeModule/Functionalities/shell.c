@@ -9,8 +9,8 @@
 #define NULL ((void *)0)
 #define MAX_CMD_SIZE 20
 
-char *commands[MAX_CMD_SIZE] = {"help", "clean", "mmTest", "syncTest", "loop", "kill", "cat", "wc", "filter", "phylo", "block", "ps"};
-void (*commandPointers[MAX_CMD_SIZE])(uint64_t, char **) = {helpMenu, clean, memoryManagerTest, syncTest, loop, kill, cat, wc, filter, phylo, block, ps};
+char *commands[MAX_CMD_SIZE] = {"help", "clean", "mmTest", "syncTest", "loop", "kill", "cat", "wc", "filter", "phylo", "block", "ps", "memStatus", "nice", "pipe"};
+void (*commandPointers[MAX_CMD_SIZE])(uint64_t, char **) = {helpMenu, clean, memoryManagerTest, syncTest, loop, kill, cat, wc, filter, phylo, block, ps, memStatus, nice, pipe};
 uint64_t commandsLength = sizeof(commands) / sizeof(commands[0]);
 
 void initializeShell()
@@ -196,6 +196,11 @@ void loop(uint64_t argc, char *argv[])
     sys_exit();
 }
 
+void memStatus(uint64_t argc, char *argv[]) {
+    sys_printMem();
+    sys_exit();
+}
+
 void cat(uint64_t argc, char *argv[])
 {
     int i = 0;
@@ -266,6 +271,11 @@ void wc(uint64_t argc, char * argv[]) {
 
 void ps(uint64_t argc, char * argv[]) {
 	sys_ps();
+	sys_exit();
+}
+
+void pipe(uint64_t argc, char * argv[]) {
+	sys_printPipes();
 	sys_exit();
 }
 

@@ -3,4 +3,5 @@ void init_mem_manager(void *const restrict memoryForMemoryManager, void *const r
 void *allocMemory(unsigned int to_alloc);
 
 void freeMemory(void *to_free);
+void printMem();
 

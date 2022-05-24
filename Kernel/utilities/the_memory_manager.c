@@ -2,6 +2,7 @@
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include "../include/the_memory_manager.h"
 #include "../include/mem_manager_ADT.h"
+#include "naiveConsole.h"
 
 static MemoryManagerADT manager;
 
@@ -16,4 +17,17 @@ void *allocMemory(unsigned int to_alloc) {
 void freeMemory(void *to_free) {
     // para despues
     memoryFree(manager, to_free);
+}
+
+void printMem() {
+
+  ncPrintStringColour("Total heap size: ", WHITE);
+  ncPrintBase(heapSize(), 10);
+  ncPrintStringColour("\n", WHITE);
+  ncPrintStringColour("Total heap left: ", WHITE);
+  ncPrintBase(heapLeft(manager), 10);
+  ncPrintStringColour("\n", WHITE);
+  ncPrintStringColour("Used heap: ", WHITE);
+  ncPrintBase(usedHeap(manager), 10);
+  
 }

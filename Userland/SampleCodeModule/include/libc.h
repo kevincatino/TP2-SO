@@ -84,6 +84,10 @@ extern void sys_killPid(uint32_t pid);
 
 extern void sys_ps();
 
+extern void sys_printMem();
+
+extern void sys_printPipes();
+
 
 char* strCpy(char* destination, const char* source);
 

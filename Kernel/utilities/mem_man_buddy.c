@@ -1,4 +1,4 @@
-
+#ifdef BUDDY
 #include <buddyADT.h>
 #include "../include/naiveConsole.h"
 #include <mem_manager_ADT.h>
@@ -185,3 +185,4 @@ size_t heapLeft(MemoryManagerADT mm) {
 size_t usedHeap(MemoryManagerADT mm) {
   return heapSize() - heapLeft(mm);
 }
+#endif

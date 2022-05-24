@@ -17,6 +17,9 @@ void wc(uint64_t argc, char * argv[]);
 void block(uint64_t argc, char * argv[]);
 void clean(uint64_t argc, char *argv[]);
 void ps(uint64_t argc, char * argv[]);
+void memStatus(uint64_t argc, char *argv[]);
+void nice(uint64_t argc, char *argv[]);
+void pipe(uint64_t argc, char * argv[]);
 
 
 void initializeShell();

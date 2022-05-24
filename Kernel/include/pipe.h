@@ -22,3 +22,5 @@ int pipeRead(FileDes fd, char *buffer, int limit);
 
 void deleteProcessFromPipes(uint32_t pid);
 
+void printPipes();
+

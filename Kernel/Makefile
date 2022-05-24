@@ -2,6 +2,8 @@ include Makefile.inc
 
 KERNEL=kernel.bin
 
+MM=HEAP2
+
 SOURCES=$(wildcard *.c)
 SOURCES_LIBASM=$(wildcard LibASM/*.asm)
 SOURCES_LIBC=$(wildcard LibC/*.c)
@@ -35,7 +37,7 @@ $(KERNEL): $(LOADEROBJECT) $(OBJECTS) $(STATICLIBS) $(OBJECTS_LIBASM) $(OBJECTS_
 
 
 %.o: %.c
-	@$(GCC) $(GCCFLAGS) -I./include -I./Drivers -I./IDT -I./LibC -I./utilities -c $< -o $@
+	@$(GCC) $(GCCFLAGS) -D$(MM) -I./include -I./Drivers -I./IDT -I./LibC -I./utilities -c $< -o $@
 	@echo "\033[32mCompiled object file \033[0m $@"
 
 

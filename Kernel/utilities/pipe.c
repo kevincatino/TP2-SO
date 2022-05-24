@@ -175,6 +175,24 @@ int pipeWrite(fd *fd, char *string)
     return i;
 }
 
+void printPipes() {
+  uint32_t index = 0;
+  ncPrintStringColour("ID      Bytes To Read       Blocked Process\n", WHITE);
+  while(index < pipesQty) {
+    ncPrintDec(pipes[index]->id);
+    ncPrintStringColour("            ", WHITE);
+    ncPrintDec(pipes[index]->readableBytes);
+    ncPrintStringColour("                   ", WHITE);
+    if (pipes[index]->waitingPCB != NULL) {
+      ncPrintDec(pipes[index]->waitingPCB->pid);
+    } else {
+      ncPrintStringColour("None", WHITE);
+    }
+    ncPrintStringColour("\n", WHITE);
+    index++;
+  }
+}
+
 int pipeRead(fd *fd, char *buffer, int limit)
 {
     
