@@ -28,15 +28,6 @@ int createPipe(fd *f0, fd *f1)
     pipes[pipesQty] = (pipeData *)allocMemory(sizeof(pipeData));
     (*pipes[pipesQty]) = (pipeData){.readIdx = 0, .writeIdx = 0, .reading = 1, .writing = 1, .readableBytes = 0, .id = internalId, .waitingPCB = NULL};
 
-
-    //   pipes[pipeAmount]->readIdx = 0;
-    //   pipes[pipeAmount]->writeIdx = 0;
-    //   pipes[pipeAmount]->reading = 1;
-    //   pipes[pipeAmount]->writing = 1;
-    //   pipes[pipeAmount]->readableBytes = 0;
-    //   pipes[pipeAmount]->id = PIPES_MAXQTY + pipeIds++;
-    //   pipes[pipeAmount]->waitingPCB = NULL;
-
     
         f0->pipe = pipes[pipesQty];
         f0->readwrite = READ;
@@ -46,12 +37,6 @@ int createPipe(fd *f0, fd *f1)
         f1->pipe = pipes[pipesQty];
         f1->readwrite = WRITE;
     
-    //   f0->pipe = pipes[pipeAmount];
-    //   f0->readable = 1;
-    //   f0->writable = 0;
-    //   f1->pipe = pipes[pipeAmount];
-    //   f1->readable = 0;
-    //   f1->writable = 1;
     pipesQty++;
     return 0;
 }

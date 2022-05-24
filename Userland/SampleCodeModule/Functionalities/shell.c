@@ -9,8 +9,8 @@
 #define NULL ((void *)0)
 #define MAX_CMD_SIZE 20
 
-char *commands[MAX_CMD_SIZE] = {"help", "clean", "mmTest", "syncTest", "loop", "kill", "cat", "wc", "filter", "phylo", "block", "ps", "memStatus", "nice", "pipe"};
-void (*commandPointers[MAX_CMD_SIZE])(uint64_t, char **) = {helpMenu, clean, memoryManagerTest, syncTest, loop, kill, cat, wc, filter, phylo, block, ps, memStatus, nice, pipe};
+char *commands[MAX_CMD_SIZE] = {"help", "clean", "mmTest", "syncTest", "loop", "kill", "cat", "wc", "filter", "phylo", "block", "ps", "memStatus", "nice", "pipe", "sem"};
+void (*commandPointers[MAX_CMD_SIZE])(uint64_t, char **) = {helpMenu, clean, memoryManagerTest, syncTest, loop, kill, cat, wc, filter, phylo, block, ps, memStatus, nice, pipe, sem};
 uint64_t commandsLength = sizeof(commands) / sizeof(commands[0]);
 
 void initializeShell()
@@ -92,7 +92,6 @@ int menuCommands(char *input)
         }
         index++;
     }
-
 
     int i;
     for (i = 0; i < commandsLength; i++)
@@ -196,14 +195,14 @@ void loop(uint64_t argc, char *argv[])
     sys_exit();
 }
 
-void memStatus(uint64_t argc, char *argv[]) {
+void memStatus(uint64_t argc, char *argv[])
+{
     sys_printMem();
     sys_exit();
 }
 
 void cat(uint64_t argc, char *argv[])
 {
-    int i = 0;
 
     if (argc == 1)
     {
@@ -214,73 +213,92 @@ void cat(uint64_t argc, char *argv[])
         }
     }
     else
-    {   
-        char string[MAX_BUFFER];
-        char * lines[MAX_CMD_SIZE];
-        
-        strCpy(string, argv[1]);
-        int lineCount = strtok(string, "\\n", lines, MAX_CMD_SIZE);
-        int i;
-        for (i = 0 ; i < lineCount ; i++) {
-            print(lines[i]);
-            putChar('\n');
+    {
+
+        int argIdx;
+        for (argIdx = 1; argIdx < argc; argIdx++)
+        {
+            char string[MAX_BUFFER];
+            char *lines[MAX_CMD_SIZE];
+            strCpy(string, argv[argIdx]);
+            int lineCount = strtok(string, "\\n", lines, MAX_CMD_SIZE);
+            int i;
+            for (i = 0; i < lineCount; i++)
+            {
+                print(lines[i]);
+                putChar('\n');
+            }
         }
     }
 
     sys_exit();
 }
 
-void filter(uint64_t argc,char * argv[]) {
-	char c;
-  while((c = getChar()) != 0) {
-    int i = 0;
-			switch (c) {
-				case 'a':
-				case 'e':
-				case 'i':
-				case 'o':
-				case 'u':
-				case 'A':
-				case 'E':
-				case 'I':
-				case 'O':
-				case 'U':
-					break;
-				default:
-					putChar(c);
-			}
-			i++;
-	}
-	sys_exit();
+void filter(uint64_t argc, char *argv[])
+{
+    char c;
+    while ((c = getChar()) != 0)
+    {
+        int i = 0;
+        switch (c)
+        {
+        case 'a':
+        case 'e':
+        case 'i':
+        case 'o':
+        case 'u':
+        case 'A':
+        case 'E':
+        case 'I':
+        case 'O':
+        case 'U':
+            break;
+        default:
+            putChar(c);
+        }
+        i++;
+    }
+    sys_exit();
 }
 
-void wc(uint64_t argc, char * argv[]) {
-	int n = 0;
+void wc(uint64_t argc, char *argv[])
+{
+    int n = 0;
     char c = 0;
-	while ((c = getChar()) != 0)
-		if(c == '\n') {
+    while ((c = getChar()) != 0)
+        if (c == '\n')
+        {
             n++;
         }
-            
 
-	print("Cantidad de lineas leidas: ");
-	printNum(n);
-	putChar('\n');
-	sys_exit();
+    print("Cantidad de lineas leidas: ");
+    printNum(n);
+    putChar('\n');
+    sys_exit();
 }
 
-void ps(uint64_t argc, char * argv[]) {
-	sys_ps();
-	sys_exit();
+void ps(uint64_t argc, char *argv[])
+{
+    sys_ps();
+    sys_exit();
 }
 
-void pipe(uint64_t argc, char * argv[]) {
-	sys_printPipes();
-	sys_exit();
+void pipe(uint64_t argc, char *argv[])
+{
+    sys_printPipes();
+    sys_exit();
 }
 
-void block(uint64_t argc, char * argv[]) {
-	if (argc == 1) {
+void sem(uint64_t argc, char *argv[])
+{
+    sys_printSemaphores();
+    sys_exit();
+}
+
+void block(uint64_t argc, char *argv[])
+{
+    if (argc == 1)
+    {
         print("Es necesario el pid del proceso");
         sys_exit();
         return;
@@ -290,11 +308,13 @@ void block(uint64_t argc, char * argv[]) {
 
     sys_change_process_state(pid, -1);
 
-	sys_exit();
+    sys_exit();
 }
 
-void nice(uint64_t argc, char * argv[]) {
-    	if (argc <= 2) {
+void nice(uint64_t argc, char *argv[])
+{
+    if (argc <= 2)
+    {
         print("Es necesario el pid del proceso");
         sys_exit();
         return;
@@ -306,7 +326,5 @@ void nice(uint64_t argc, char * argv[]) {
 
     sys_change_process_priority(pid, priority);
 
-	sys_exit();
+    sys_exit();
 }
-
-

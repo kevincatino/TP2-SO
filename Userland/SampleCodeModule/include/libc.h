@@ -88,6 +88,8 @@ extern void sys_printMem();
 
 extern void sys_printPipes();
 
+extern void sys_printSemaphores();
+
 
 char* strCpy(char* destination, const char* source);
 

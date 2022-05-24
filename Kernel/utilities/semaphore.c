@@ -135,6 +135,31 @@ int my_wait(Semaphore sem)
     return 0;
 }
 
+void printSemaphores() {
+  uint32_t index = 0;
+      ncPrintStringColour("ID      Value       Blocked Process\n", WHITE);
+  while(index < qty) {
+
+    ncPrintDec(sems[index]->id);
+    ncPrintStringColour("         ", WHITE);
+    ncPrintDec(sems[index]->value);
+    ncPrintStringColour("               ", WHITE);
+    if(sems[index]->waitingProcQty > 0) {
+      ncPrintDec(sems[index]->waitingProcs[0]->pid);
+      ncPrintStringColour("\n", WHITE);
+      for(int i = 1; i < sems[index]->waitingProcQty; i++) {
+       ncPrintStringColour("                          ", WHITE);
+        ncPrintDec(sems[index]->waitingProcs[i]->pid);
+       ncPrintStringColour("\n", WHITE);
+      }
+    } else {
+     ncPrintStringColour("None", WHITE);
+      ncPrintStringColour("\n", WHITE);
+    }
+    index++;
+  }
+}
+
 static void deleteProcessFromSemaphore(Semaphore sem, uint32_t pid)
 {
     for (int j = 0; j < sem->waitingProcQty; j++)

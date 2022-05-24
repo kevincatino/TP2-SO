@@ -36,6 +36,7 @@ GLOBAL sys_killPid
 GLOBAL sys_ps
 GLOBAL sys_printMem
 GLOBAL sys_printPipes
+GLOBAL sys_printSemaphores
 
 ;-----------------------------------------------------------
 ; sys_read - lee de file descriptor
@@ -538,6 +539,19 @@ sys_printPipes:
     push rbx
 
     mov rax, 35  
+    int 80h
+
+    pop rbx
+    mov rsp, rbp     
+    pop rbp     
+    ret
+
+sys_printSemaphores:
+    push rbp     
+    mov rbp, rsp     
+    push rbx
+
+    mov rax, 36  
     int 80h
 
     pop rbx

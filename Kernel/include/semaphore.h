@@ -15,3 +15,5 @@ int my_signal(Semaphore sem);
 int my_wait(Semaphore sem);
 
 void deleteProcessFromSemaphores(uint32_t pid);
+
+void printSemaphores();

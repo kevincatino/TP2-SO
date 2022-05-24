@@ -388,6 +388,7 @@ int ncGetCurrentVideo() {
 
 void ncDelete() {	
 	if (ncGetCurrentVideo()) {
+		*currentVideo = ' ';
     	currentVideo -= 2;
 		*currentVideo = ' ';
 	}

@@ -20,6 +20,7 @@ void ps(uint64_t argc, char * argv[]);
 void memStatus(uint64_t argc, char *argv[]);
 void nice(uint64_t argc, char *argv[]);
 void pipe(uint64_t argc, char * argv[]);
+void sem(uint64_t argc, char * argv[]);
 
 
 void initializeShell();
