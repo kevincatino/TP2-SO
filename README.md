@@ -37,6 +37,8 @@ Una vez ejecutado, se va a visualizar la shell. Los comandos disponibles son los
 | nice   | Cambia la prioridad de un proceso dado su ID y la nueva prioridad. |
 | pipe   |  Despliega una lista de los pipes activos con sus propiedades. |
 | sem   |  Despliega una lista de los semaforos activos con sus propiedades. |
+| prioTest   |  Test de manejo de prioridades de procesos. |
+| procTest   |  Test de administración de procesos. |
 
 Cabe destacar que hay una tecla especial que es: **'esc'**. La funcion de dicha tecla es forzar el exit de un proceso que haya tomado el foreground de la shell 
 
