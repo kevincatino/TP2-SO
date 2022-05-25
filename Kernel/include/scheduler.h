@@ -72,8 +72,6 @@ void changeProcessStateForUser(uint32_t pid, int state);
 
 uint32_t getCurrentPid();
 
-pcb *getCurrentProcess();
-
 void awakeProcessFromKBQueue();
 
 void getProcessIntoKBQueue();

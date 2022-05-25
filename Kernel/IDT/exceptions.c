@@ -1,3 +1,5 @@
+// This is a personal academic project. Dear PVS-Studio, please check it.
+// PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include <naiveConsole.h>
 #include <lib.h>
 #include <clockDriver.h>
@@ -62,7 +64,7 @@ void printRegisters(uint64_t* registers) {
 
 
 uint64_t hexaToInt(char *s) {
-	int c;
+	
 	uint64_t rta = 0;
 
 	if (*s == '0' && *(s + 1) == 'x')
@@ -72,7 +74,7 @@ uint64_t hexaToInt(char *s) {
 
 	for (int i = 0; i < len; i++)
 	{
-		c = s[len - 1 - i] - '0';
+		int c = s[len - 1 - i] - '0';
 		if (c < 0 || c > 9)
 		{
 			c = s[len - 1 - i] - 'A' + 10;

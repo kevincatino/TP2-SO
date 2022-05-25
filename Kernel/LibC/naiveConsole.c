@@ -1,3 +1,5 @@
+// This is a personal academic project. Dear PVS-Studio, please check it.
+// PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include <naiveConsole.h>
 
 #define GENERAL_SCREEN 0
@@ -266,33 +268,6 @@ void ncPrintInScreenPosition(char* line, uint64_t position) {
 }
 
 
-
-void ncClearParticuarScreen(int startPosition, int count, int isLeft) {
-	uint8_t * screenDelete = video;
-	screenDelete += startPosition;
-	int flag = 0;
-	int j = 0;
-	if(!isLeft) {
-		j = 1;
-	}
-
-	for(int i = 0; flag < count; i++, j++) {
-		if(j == (width/2)) {		
-			flag++;
-			if(!isLeft) {
-				j = 1;
-				i += (width/2) + 1;	// Para irme al proximo renglon sin tener problemas
-			} else {
-				j = 0;
-				i += (width/2);		// Para irme al proximo renglon sin tener problemas
-			}
-		} 
-		if(flag == count) {
-			break;
-		}
-		screenDelete[i * 2] = ' ';
-	}
-}
 
 
 

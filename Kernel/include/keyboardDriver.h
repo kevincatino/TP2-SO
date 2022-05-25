@@ -28,9 +28,6 @@ void keyboard_handler();
 // Me convierte del scanCode al char que corresponde
 char scanToChar(int scancode);
 
-// Retorna el buffer
-unsigned char* getBuffer();
-
 
 // Me coloca la tecla en el buffer
 void putCharInBuffer(char sc);

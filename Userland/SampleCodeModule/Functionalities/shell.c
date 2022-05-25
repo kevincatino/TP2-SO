@@ -1,3 +1,5 @@
+// This is a personal academic project. Dear PVS-Studio, please check it.
+// PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include <shell.h>
 #include <libc.h>
 #include <test_lib.h>
@@ -77,16 +79,26 @@ void managePipe(char *command[], uint64_t pipeIdx, uint64_t argSize)
 
     int bg = strCmp(command[argSize-1], "&") == 0;
     argSize -= bg;
-    sys_create_process((uint64_t)commandPointers[indexP2], 2, argSize - pipeIdx - 1, command + pipeIdx + 1, pipeRead, STDOUT);
+    sys_create_process((uint64_t)commandPointers[indexP2], 1 + bg, argSize - pipeIdx - 1, command + pipeIdx + 1, pipeRead, STDOUT);
 
 
     sys_create_process((uint64_t)commandPointers[indexP1], 1 + bg, pipeIdx, command, STDIN, pipeWrite);
+
+    sys_yield();
 }
 
 int menuCommands(char *input)
 {
     char *command[MAX_ARGUMENTS] = {NULL, NULL, NULL, NULL, NULL, NULL};
     int argSize = strtok(input, " ", command, MAX_ARGUMENTS);
+    // int j = 0;
+
+    // for (j = 0 ; j<argSize ; j++) {
+    //     print(command[j]);
+    //     print("\n");
+    // }
+    // return 1;
+
 
     int index = 0;
     while (index < argSize - 1)
@@ -114,6 +126,7 @@ int menuCommands(char *input)
                 // printNum(sys_pid());
                 sys_create_process((uint64_t)commandPointers[i], 1, argSize, command, STDIN, STDOUT);
             }
+            sys_yield();
             return TRUE;
         }
     }

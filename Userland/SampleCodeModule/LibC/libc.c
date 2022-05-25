@@ -1,3 +1,5 @@
+// This is a personal academic project. Dear PVS-Studio, please check it.
+// PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include <libc.h>
 // Salida/Entrada
 #define SIZE_CHAR 2
@@ -23,10 +25,6 @@ void userPrint(char * buffer) {
 }
 
 
-void getScreenDivition() {
-	sys_screen_divition();
-}
-
 
 void clearScreen() {
 	sys_screen_clear();
@@ -44,29 +42,10 @@ void putChar(char c) {
 
 
 
-void printSudokuNumbers(char* line, uint64_t position, uint64_t orientationX) {
-	sys_print_sudoku_numbers(line, position, orientationX);
-}
-
-
-void printInScreenPosition(char* message, uint64_t position) {
-	sys_print_in_screen_position(message, position);
-}
-
-void changeScreen(uint64_t mode) {
-	sys_screen_mode(mode);
-}
-
-
-uint64_t getMilliSeconds(uint64_t time) {
-	return sys_get_milli_seconds(time);
-}
-
-
 void reverse(char *str, uint64_t len) {
-	int temp;
+	
 	for(int i=0; i<len/2; i++){
-		temp = str[i];
+		int temp = str[i];
 		str[i] = str[len-i-1];
 		str[len-i-1]=temp;
 	}
@@ -91,16 +70,6 @@ int numToStr(int num, int pos, char*buff) {
 
 int isDigit(char c) {
     return c <= '9' && c >= '0';
-}
-
-
-int charToDigit(char* buffer) {
-    int res = 0;
-
-	for (int i = 0; buffer[i]; ++i) {
-       res = res * 10 + buffer[i] - '0';
-  	}
-	return res;
 }
 
 
@@ -130,39 +99,6 @@ int isAlpha(char c) {
 }
 
 
-void stringToIntArray(char* buffer[], int* positions, int max) {
-	int res = 0;
-	for(int i = 0; i < max; i++) {
-		res = 0;
-		for(int j = 0; buffer[i][j] != '\0'; j++) {
-			res = res * 10 + buffer[i][j] - '0';
-		}
-		positions[i] = res;
-	}
-}
-
-
-void clearBuffer() {
-    bufferSize = 0;
-    int c = 0;
-    while(c != -1) {
-        c = getChar();
-    }
-    
-}
-
-
-void toStr(int number, char* ret){
-	ret[0] = number + '0';
-    ret[1] = '\0';
-}
-
-
-void putInBuffer(char c) {
-    if(bufferSize < MAX_BUFFER - 1) {
-        buffer[bufferSize++] = c;
-    }
-}
 
 
 int strCmp( char * s1,  char * s2) {
@@ -292,15 +228,9 @@ char * intToHexa(uint64_t num, char * str, int bytes){
     return str;
 } 
 
-
-int power(int num, int p) {
-	int res = 1;
-	for(int i = 0; i < p; i++) {
-		res *= 10;
-	}
-	return num*res;
-}
 static int stringsMatch(char * s1, char * toMatch) {
+	if (strlength(s1) < strlength(toMatch))
+		return 0;
 	while (*toMatch) {
 		if (*toMatch != *s1)
 			return 0;
@@ -312,23 +242,30 @@ static int stringsMatch(char * s1, char * toMatch) {
 
 int strtok(char *s, char * delim, char *array[], int arraySize) {
 	int arrayIndex = 0;
-	if (!stringsMatch(s, delim) && *s != '\0')
-		array[arrayIndex++] = s;
-	while (*s != '\0')
+	int sIdx = 0;
+	int sLength = strlength(s);
+	int delimLen = strlength(delim);
+	// if (stringsMatch(s, delim) && *s != '\0')
+	// 	sIdx+=delimLen;
+	array[arrayIndex++] = s;
+	while (s[sIdx] != '\0' && sIdx < sLength)
 	{
 
-		if (stringsMatch(s, delim))
+		if (stringsMatch(&s[sIdx], delim))
 		{
-			*s = 0;
-			int delimLen = strlength(delim);
-			if (stringsMatch(s + delimLen, delim) && (*(s + delimLen) != '\0'))
-			{
+			s[sIdx] = 0;
+
+			// if (!stringsMatch(s + delimLen, delim) && (*(s + delimLen +1) != '\0'))
+			// {
 				if (arrayIndex >= arraySize)
 					return arrayIndex;
-				array[arrayIndex++] = s + delimLen;
-			}
+				array[arrayIndex++] = s + sIdx + delimLen;
+			// }
+		sIdx+=delimLen;
 		}
-		s++;
+		else
+		sIdx++;
+		
 	}
 	return arrayIndex;
 }
@@ -339,8 +276,6 @@ void readInput(char* inputBuffer, int maxSize, int flag) {
     char c;
     while (size < (maxSize - 1) && (c = getChar()) != '\n') {
 		if(flag != 0) {
-		    // timeGame();
-			// stopWatch();
 		}
         if (c) { 
             if (c != '\b' && c != '\t') {
@@ -358,27 +293,7 @@ void readInput(char* inputBuffer, int maxSize, int flag) {
 }
 
 
-int checkTabCount() {
-	return tabCount;
-}
 
-
-
-void intToString(int num, char *str) {	// Ver como hacer para que imprima el 10
-    int power=0;
-    int j=num;
-    for(power=1; j>=10; j/=10) {
-        power *= 10;
-	}	
-	if(num >= 0 && num <= 9){
-		(*str++)='0';
-	}
-    for(; power > 0; power/=10) {
-        (*str++) = '0' + num/power;
-        num %= power;
-    }
-    *str='\0';
-}
 
 void sleep(uint64_t seconds) {
 	int ticks = sys_get_ticks();

@@ -1,3 +1,5 @@
+// This is a personal academic project. Dear PVS-Studio, please check it.
+// PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include <keyboardDriver.h>
 #include <naiveConsole.h>
 #include <keyboardDriver.h>
@@ -18,10 +20,10 @@ static char scanCodeToChar[KEYS][2] = {
 
 
 void keyboard_handler() {
-    int scanCode;
+    
 
     while (kbDetection()) {
-        scanCode = kbScanCode();
+        int scanCode = kbScanCode();
         // ncPrintDec(scanCode);
         if (scanCode == SHIFTL || scanCode == SHIFTR) {
             shiftFlag = 1;
@@ -49,10 +51,6 @@ char scanToChar(int scancode) {
 }
 
 
-unsigned char* getBuffer() {
-	return keyboardBuffer;
-}
-
 
 void putCharInBuffer(char sc) {
     if (keyboardBufferSize <= MAX_SIZE) {
@@ -63,7 +61,7 @@ void putCharInBuffer(char sc) {
 
 char getChar() {
     // FileDes stdin = getStdin();
-    while (keyboardBufferSize <= 0) {
+    while (keyboardBufferSize == 0) {
         getProcessIntoKBQueue();
     }
     char key = keyboardBuffer[0];

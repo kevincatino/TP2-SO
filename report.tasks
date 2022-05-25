@@ -1,0 +1,10 @@
+www.viva64.com/en/w	1	err	Help: The documentation for all analyzer warnings is available here: https://www.viva64.com/en/w/.
+/home/khcatino/SO/TP2-SO/Bootloader/BMFS/bmfs.c	238	note	V576 Incorrect format. Consider checking the third actual argument of the 'printf' function. The SIGNED integer type argument is expected.
+/home/khcatino/SO/TP2-SO/Bootloader/BMFS/bmfs.c	254	note	V576 Incorrect format. Consider checking the third actual argument of the 'printf' function. The SIGNED integer type argument is expected.
+/home/khcatino/SO/TP2-SO/Bootloader/BMFS/bmfs.c	254	note	V576 Incorrect format. Consider checking the fourth actual argument of the 'printf' function. The SIGNED integer type argument is expected.
+/home/khcatino/SO/TP2-SO/Bootloader/BMFS/bmfs.c	369	note	V584 The 'diskSize' value is present on both sides of the '>' operator. The expression is incorrect or it can be simplified.
+/home/khcatino/SO/TP2-SO/Bootloader/BMFS/bmfs.c	408	note	V576 Incorrect format. Consider checking the second actual argument of the 'printf' function. Under certain conditions the pointer can be null.
+/home/khcatino/SO/TP2-SO/Bootloader/BMFS/bmfs.c	452	note	V575 The potential null pointer is passed into 'memset' function. Inspect the first argument.
+/home/khcatino/SO/TP2-SO/Bootloader/BMFS/bmfs.c	482	note	V575 The potential null pointer is passed into 'rewind' function. Inspect the first argument.
+/home/khcatino/SO/TP2-SO/Bootloader/BMFS/bmfs.c	552	err	V595 The 'disk' pointer was utilized before it was verified against nullptr. Check lines: 552, 575.
+/home/khcatino/SO/TP2-SO/Bootloader/BMFS/bmfs.c	689	note	V576 Incorrect format. Consider checking the second actual argument of the 'printf' function. The SIGNED integer type argument is expected.

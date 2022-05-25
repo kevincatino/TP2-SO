@@ -1,5 +1,7 @@
 // This is a personal academic project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
+// This is a personal academic project. Dear PVS-Studio, please check it.
+// PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #ifdef HEAP2
 
 #include "../include/mem_manager_ADT.h"
@@ -60,7 +62,7 @@ void *memoryAlloc(MemoryManagerADT const memoryManager, unsigned int memoryToAll
   // ncPrintDec(memoryManager->freeBytesRemaining);
   // ncPrint(" ");
 
-  MemoryBlock *block, *previousBlock;
+  
   void *blockToReturn = NULL;
 
   if (memoryToAllocate == 0)
@@ -73,6 +75,7 @@ void *memoryAlloc(MemoryManagerADT const memoryManager, unsigned int memoryToAll
   }
 
   if (memoryToAllocate < TOTAL_HEAP_SIZE) {
+    MemoryBlock *block, *previousBlock;
     previousBlock = &memoryManager->start;
     block = memoryManager->start.pnextFreeBlock;
 

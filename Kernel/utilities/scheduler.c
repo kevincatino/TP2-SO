@@ -1,3 +1,5 @@
+// This is a personal academic project. Dear PVS-Studio, please check it.
+// PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 
 #include "../include/naiveConsole.h"
 #include "../include/interrupts.h"
@@ -132,7 +134,9 @@ void initScheduler()
 
   dummy->process.pid = 0;
   dummy->process.sp = sp;
+
   stringCopy(dummy->process.args[0], "cursor");
+  dummy->process.argv[0] = dummy->process.args[0];
   dummy->process.processMemory = dummyMemory;
   dummy->process.pstate = 1;
   setBlockPriority(&dummy->process, 2);
@@ -226,7 +230,10 @@ uint32_t createProcess(uint64_t ip, uint8_t priority, uint64_t argc, char argv[6
   scheduler->start = loadProcess(scheduler->start, pid++, priority, argc, argv, ip, stdin, stdout);
 
     if (thisPid != 1 && priority == 1) {
-      changeProcessState(1, BLOCKED);
+      ListNode * aux = scheduler->currentProcess;
+      while (aux != NULL && aux->process.pid!=1)
+        aux = aux->next;
+      aux->process.pstate = BLOCKED;
   }
 
   return thisPid;
@@ -393,7 +400,10 @@ void printProcessList()
     ncPrintStringColour("        ", WHITE);
     ncPrintHex(aux->process.sp);
     ncPrintStringColour("     ", WHITE);
-    ncPrintHex(aux->process.bp);
+    if (aux->process.pid == 0)
+      ncPrintStringColour("   NA  ", WHITE);
+      else
+      ncPrintHex(aux->process.bp);
     ncPrintStringColour("     ", WHITE);
     ncPrintStringColour(aux->process.priority == 1 ? "Foreground" : "Background", WHITE);
     ncPrintStringColour("     ", WHITE);
@@ -426,22 +436,18 @@ void changeProcessState(uint32_t pid, int state)
 static ListNode * deleteForeground(ListNode * node) {
   if (node == NULL)
     return node;
+
   
   if (node->process.priority == 1 && node->process.pid != 1) {
     ListNode * aux = node->next;
-    // ncPrint("borro ");
-    // ncPrint(node->process.args[0]);
-    // ncPrint("\n");
     deleteProcessFromSemaphores(node->process.pid);
     deleteProcessFromPipes(node->process.pid);
     closeFd(node->process.stdin);
     closeFd(node->process.stdout);
     freeMemory((void *)node->process.processMemory);
-    freeMemory((void *)node);
-    if (aux != NULL && aux->next != NULL)
-      aux->next = deleteForeground(aux->next);
+    freeMemory((void *)node);   
 
-    return aux;
+    return deleteForeground(aux);
   }
 
   node->next = deleteForeground(node->next);
@@ -458,6 +464,7 @@ void killForeground() {
   //   return;
   // killPid(node->process.pid);
   scheduler->start = deleteForeground(scheduler->start);
+
   changeProcessState(1, READY);
 }
 
@@ -487,11 +494,6 @@ void changeProcessStateForUser(uint32_t pid, int state)
 uint32_t getCurrentPid()
 {
   return scheduler->currentProcess->process.pid;
-}
-
-pcb *getCurrentProcess()
-{
-  return &scheduler->currentProcess->process;
 }
 
 void getProcessIntoKBQueue()

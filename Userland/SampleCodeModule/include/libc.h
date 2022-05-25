@@ -117,12 +117,6 @@ uint64_t strlength(char * string);
 void userPrint(char * buffer);
 
 
-// ----------------------------------------------------------
-// getScreenDivition: llama a la sys call de division de 
-// 						pantalla
-// ----------------------------------------------------------
-void getScreenDivition();
-
 
 // ----------------------------------------------------------
 // getScreenDivition: limpia la pantalla
@@ -147,46 +141,6 @@ char getChar();
 // ----------------------------------------------------------
 void putChar(char c);
 
-
-// ----------------------------------------------------------
-// printSudokuNumbers: pone un char en pantalla
-// ----------------------------------------------------------
-// Argumentos:
-//      1. El char a srcolocar
-// ----------------------------------------------------------
-void printSudokuNumbers(char* line, uint64_t position, uint64_t orientationX);
-
-
-// ----------------------------------------------------------
-// printInScreenPosition: imprime en la posicion que se le
-// 							indique, en la pantalla de juegos
-// ----------------------------------------------------------
-// Argumentos:
-//      1. El mensaje a escrbir
-//		2. La posicion a escrbir
-// ----------------------------------------------------------
-void printInScreenPosition(char* message, uint64_t position);
-
-
-// ----------------------------------------------------------
-// changeScreen: cambia la pantalla donde "quiero estar" 
-// ----------------------------------------------------------
-// Argumentos:
-//      1. El numero de pantalla que quiero estar
-// ----------------------------------------------------------
-void changeScreen(uint64_t mode);
-
-
-// ----------------------------------------------------------
-// getMilliSeconds: retorna los milisegundos
-// ----------------------------------------------------------
-// Argumentos:
-//      1. El tiempo que le indico
-// ----------------------------------------------------------
-// Retorna:
-//     retorna milisegundos
-// ----------------------------------------------------------
-uint64_t getMilliSeconds(uint64_t time);
 
 
 // ----------------------------------------------------------
@@ -234,19 +188,6 @@ int numToStr(int num, int pos, char*buff);
 // ----------------------------------------------------------
 int isDigit(char c);
 
-
-// ----------------------------------------------------------
-// charToDigit: Me pasa el valor a digito
-// 				Utiliza: isDigit
-// ----------------------------------------------------------
-// Argumentos:
-//      1. El caracter
-// ----------------------------------------------------------
-// Retorna:
-//      El valor del digito entero si el char es un numero 
-// 		o -1 sino.
-// ----------------------------------------------------------
-int charToDigit(char* buffer);
 
 
 // ----------------------------------------------------------
@@ -297,48 +238,6 @@ int isWhiteSpace(char c);
 int isAlpha(char c);
 
 
-// ----------------------------------------------------------
-// stringToIntArray: guarda un numero y avanza hasta el  
-// 					 siguiente saltando espacios
-// ----------------------------------------------------------
-// Argumentos:
-//      1. El char a guardar
-// 		2. El array donde guardarlo
-// ----------------------------------------------------------
-// Retorna:
-//      1 si no hubo errores
-//		0 si hubo errores
-// ----------------------------------------------------------
-void stringToIntArray(char* buffer[], int* positions, int max); 
-
-
-// ----------------------------------------------------------
-// clearBuffer: limpia el buffer
-// ----------------------------------------------------------
-// Argumentos:
-//      1. -
-// ----------------------------------------------------------
-void clearBuffer();
-
-
-// ----------------------------------------------------------
-// toStr: convierte un numero a string
-// ----------------------------------------------------------
-// Argumentos:
-//      1. El numero a convertir
-// 		2. El retorno
-// ----------------------------------------------------------
-void toStr(int num, char* ret);
-
-
-// ----------------------------------------------------------
-// putInBuffer: coloca en el buffer el char 
-// ----------------------------------------------------------
-// Argumentos:
-//      1. El char a colocar en el buffer
-// ----------------------------------------------------------
-void putInBuffer(char c);
-
 
 // ----------------------------------------------------------
 // strCmp: compara dos string a ver si son iguales o no
@@ -384,19 +283,6 @@ char * intToHexa(uint64_t num, char * str, int bytes);
 
 
 // ----------------------------------------------------------
-// power: Hace la potencia
-// ----------------------------------------------------------
-// Argumentos:
-//      1. El numero
-//      2. La potencia de 10. Ejemplo: (5 ^ p)
-// ----------------------------------------------------------
-// Retorna:
-//      El numero final
-// ----------------------------------------------------------
-int power(int num, int p);
-
-
-// ----------------------------------------------------------
 // strtok: almacena en el array las palabras del string 
 //         separadas por un delimitador
 // ----------------------------------------------------------
@@ -421,19 +307,6 @@ int strtok(char *s, char * delim, char *array[], int arraySize);
 // 		3. Flag 1 para shell, 0 para general
 // ----------------------------------------------------------
 void readInput(char * inputBuffer, int maxSize, int flag);
-
-
-int checkTabCount();
-
-
-// ----------------------------------------------------------
-// intToString: convierte de int a string
-// ----------------------------------------------------------
-// Argumentos:
-//      1. El numero a convertir
-// 		2. El string resultante
-// ----------------------------------------------------------
-void intToString(int num, char *str);
 
 
 void sleep(uint64_t seconds);
