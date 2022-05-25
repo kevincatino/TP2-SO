@@ -103,7 +103,6 @@ int64_t test_processes(uint64_t argc, char *argv[])
   uint8_t alive = 0;
   uint8_t action;
   uint64_t max_processes;
-  char *argvAux[] = {0};
 
   if (argc != 2) {
     print("The number of processes is needed as parameter\n");
@@ -121,7 +120,7 @@ int64_t test_processes(uint64_t argc, char *argv[])
   for (rq = 0; rq < max_processes; rq++)
   {
     char *args[] = {"testLoop", "3"};
-    p_rqs[rq].pid = sys_create_process(loop, 3, 2, args, STDIN, STDOUT);
+    p_rqs[rq].pid = sys_create_process((uint64_t)loop, 3, 2, args, STDIN, STDOUT);
     print("Created process: ");
     printNum(p_rqs[rq].pid);
     print("\n");
@@ -272,9 +271,9 @@ void testSync()
   for (i = 0; i < TOTAL_PAIR_PROCESSES; i++)
   {
     char *argv1[] = {"inc process with sem", "1", "1", "100"};
-    sys_create_process(&inc, 4, 4, argv1, STDIN, STDOUT);
+    sys_create_process((uint64_t)inc, 4, 4, argv1, STDIN, STDOUT);
     char *argv2[] = {"inc process with sem", "1", "-1", "100"};
-    sys_create_process(&inc, 4, 4, argv2, STDIN, STDOUT);
+    sys_create_process((uint64_t)inc, 4, 4, argv2, STDIN, STDOUT);
   }
 }
 
@@ -289,9 +288,9 @@ void testNoSync()
   for (i = 0; i < TOTAL_PAIR_PROCESSES; i++)
   {
     char *argv1[] = {"inc process without sem", "0", "1", "100"};
-    sys_create_process(&inc, 4, 4, argv1, STDIN, STDOUT);
+    sys_create_process((uint64_t)inc, 4, 4, argv1, STDIN, STDOUT);
     char *argv2[] = {"inc process without sem", "0", "-1", "100"};
-    sys_create_process(&inc, 4, 4, argv2, STDIN, STDOUT);
+    sys_create_process((uint64_t)inc, 4, 4, argv2, STDIN, STDOUT);
   }
 }
 
@@ -330,8 +329,8 @@ void test_prio(uint64_t argc, char * argv[])
   int64_t pids[TOTAL_PROCESSES];
   uint64_t i;
 
-  char buf[TOTAL_PROCESSES][10] = {0};
-  char *args[TOTAL_PROCESSES][2] = {0};
+  char buf[TOTAL_PROCESSES][10] = {{0}};
+  char *args[TOTAL_PROCESSES][2] = {{0}};
 
 
   for (i = 0; i < TOTAL_PROCESSES; i++)

@@ -29,7 +29,8 @@ void initializeShell();
 void initialMessage();
 void generalShell();
 int menuCommands(char* input);
-void helpMenu();
+void helpMenu(uint64_t argc, char *argv[]);
+
 void printUser();
 
 #endif

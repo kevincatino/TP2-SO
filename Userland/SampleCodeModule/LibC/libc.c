@@ -312,7 +312,7 @@ static int stringsMatch(char * s1, char * toMatch) {
 
 int strtok(char *s, char * delim, char *array[], int arraySize) {
 	int arrayIndex = 0;
-	if (*s != delim && *s != '\0')
+	if (!stringsMatch(s, delim) && *s != '\0')
 		array[arrayIndex++] = s;
 	while (*s != '\0')
 	{
@@ -321,7 +321,7 @@ int strtok(char *s, char * delim, char *array[], int arraySize) {
 		{
 			*s = 0;
 			int delimLen = strlength(delim);
-			if (*(s + delimLen) != delim && (*(s + delimLen) != '\0'))
+			if (stringsMatch(s + delimLen, delim) && (*(s + delimLen) != '\0'))
 			{
 				if (arrayIndex >= arraySize)
 					return arrayIndex;

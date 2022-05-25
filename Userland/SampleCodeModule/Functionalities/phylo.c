@@ -163,7 +163,7 @@ static void printState() {
   print("\n");
 }
 
-void phylo(int argc, char * argv[]) {
+void phylo(uint64_t argc, char * argv[]) {
   print("Bienvenidos al juego de los filosofos!\n");
   mutexSem = sys_sem_open(30, 1);
 

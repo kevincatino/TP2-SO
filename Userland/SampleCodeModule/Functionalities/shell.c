@@ -9,7 +9,7 @@
 #define MAX_CMD_SIZE 20
 
 char *commands[MAX_CMD_SIZE] = {"help", "clean", "mmTest", "syncTest", "loop", "kill", "cat", "wc", "filter", "phylo", "block", "ps", "memStatus", "nice", "pipe", "sem", "prioTest", "procTest"};
-void (*commandPointers[MAX_CMD_SIZE])(uint64_t, char **) = {helpMenu, clean, memoryManagerTest, syncTest, loop, kill, cat, wc, filter, phylo, block, ps, memStatus, nice, pipe, sem, prioTest, procTest};
+void (*commandPointers[MAX_CMD_SIZE])(uint64_t argc, char *argv[]) = {helpMenu, clean, memoryManagerTest, syncTest, loop, kill, cat, wc, filter, phylo, block, ps, memStatus, nice, pipe, sem, prioTest, procTest};
 uint64_t commandsLength = sizeof(commands) / sizeof(commands[0]);
 
 void initializeShell()
@@ -20,9 +20,9 @@ void initializeShell()
 
 void initialMessage()
 {
-    print("             _ _ _ ____ _    ____ ____ _  _ ____    ___ ____ \n");
-    print("             | | | |___ |    |    |  | |\\\/| |___     |  |  |    \n");
-    print("             |_|_| |___ |___ |___ |__| |  | |___     |  |__| \n");
+    print("         _ _ _ ____ _    ____ ____ _  _ ____    ___ ____ \n");
+    print("         | | | |___ |    |    |  | |\\/| |___     |  |    \n");
+    print("         |_|_| |___ |___ |___ |__| |  | |___     |  |__| \n");
     print("                                                         \n");
     print("                         ____ ____ ____                     \n");
     print("                         [__  |  | [__                      \n");
@@ -123,7 +123,7 @@ int menuCommands(char *input)
     return TRUE;
 }
 
-void helpMenu(uint64_t argc, char *argv)
+void helpMenu(uint64_t argc, char *argv[])
 {
     print("The commands and descriptions availables are:\n\n");
     print("\'help\' - Display the commands and descriptions of the functions availables.\n");
