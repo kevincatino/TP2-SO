@@ -1,4 +1,4 @@
-# Manual de Usuario Trabajo Especial Arquitectura de Computadoras
+# Manual de Usuario Trabajo Practico Sistemas Operativos
 
 ## Pasos a seguir para la ejecucion: 
 
