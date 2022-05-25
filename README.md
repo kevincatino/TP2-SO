@@ -38,6 +38,8 @@ Una vez ejecutado, se va a visualizar la shell. Los comandos disponibles son los
 | pipe   |  Despliega una lista de los pipes activos con sus propiedades. |
 | sem   |  Despliega una lista de los semaforos activos con sus propiedades. |
 
+Cabe destacar que hay una tecla especial que es: *'esc'*. Dicha tecla fuerza el exit de un proceso que haya tomado el foreground de la shell 
+
 
 ## Trabajo realizado por:
 
