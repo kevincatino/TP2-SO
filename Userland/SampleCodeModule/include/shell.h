@@ -21,6 +21,8 @@ void memStatus(uint64_t argc, char *argv[]);
 void nice(uint64_t argc, char *argv[]);
 void pipe(uint64_t argc, char * argv[]);
 void sem(uint64_t argc, char * argv[]);
+void prioTest(uint64_t argc, char *argv[]);
+void procTest(uint64_t argc, char *argv[]);
 
 
 void initializeShell();

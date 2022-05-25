@@ -8,7 +8,7 @@
 
 pipeData *pipes[PIPES_MAXQTY];
 uint32_t pipesQty = 0;
-uint8_t internalId = 0;
+int internalId = 0;
 
 fd *createFd()
 {
@@ -164,7 +164,13 @@ void printPipes() {
   uint32_t index = 0;
   ncPrintStringColour("ID      Bytes To Read       Blocked Process\n", WHITE);
   while(index < pipesQty) {
-    ncPrintDec(pipes[index]->id);
+      int id = pipes[index]->id;
+      if(id < 0) {
+          ncPrint("-");
+          id = -id;
+      }
+
+    ncPrintDec(id);
     ncPrintStringColour("            ", WHITE);
     ncPrintDec(pipes[index]->readableBytes);
     ncPrintStringColour("                   ", WHITE);

@@ -421,7 +421,7 @@ void changeProcessState(uint32_t pid, int state)
 
 void killForeground() {
   ListNode * node = scheduler->start;
-  while(node->next != NULL && (node->process.pid == 1 || node->process.priority != 1)) {
+  while(node != NULL && (node->process.pid == 1 || node->process.priority != 1)) {
     node = node->next;
   }
   if (node == NULL)

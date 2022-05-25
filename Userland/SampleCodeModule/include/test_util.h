@@ -1,4 +1,5 @@
 #include <stdint.h>
+#include <shell.h>
 
 uint32_t GetUint();
 uint32_t GetUniform(uint32_t max);

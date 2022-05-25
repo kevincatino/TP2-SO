@@ -25,6 +25,8 @@
         "test_lib.h": "c",
         "shell.h": "c",
         "pipe.h": "c",
-        "phylo.h": "c"
+        "phylo.h": "c",
+        "buddyadt.h": "c",
+        "test_util.h": "c"
     }
 }

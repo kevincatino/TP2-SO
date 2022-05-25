@@ -1,7 +1,7 @@
 #include <stdint.h>
 #include <scheduler.h>
 
-#define MAX_PROCESSES 10
+#define MAX_PROCESSES 20
 #define MAX_SEMS 20
 
 typedef struct Sem_T * Semaphore;

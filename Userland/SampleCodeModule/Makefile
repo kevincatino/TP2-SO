@@ -30,12 +30,12 @@ $(MODULE): $(OBJECTS) $(OBJECTS_LIBC) $(OBJECTS_TEST) $(OBJECTS_FUNC) $(OBJECTS_
 
 
 %.o: %.c
-	@$(GCC) $(GCCFLAGS) -I./include -I./LibC -I./Functionalities -c $< -o $@
+	@$(GCC) $(GCCFLAGS) -I./include -I./LibC -I./Functionalities -I./tests -c $< -o $@
 	@echo "\033[32mCompiled object file \033[0m $@"
 
 
 clean:
-	-@rm -rf *.o LibASM/*.o LibC/*.o Functionalities/*.o *.bin ../0000-sampleCodeModule.elf
+	-@rm -rf *.o LibASM/*.o LibC/*.o Functionalities/*.o *.bin ../0000-sampleCodeModule.elf tests/*.o
 	@echo "\033[3;35m[Userland/SampleCodeModule cleaned]\033[0m"
 
 

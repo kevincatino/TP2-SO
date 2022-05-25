@@ -5,7 +5,7 @@
 #include "phylo.h"
 #include "test_util.h"
 
-#define MAX_PH 10
+#define MAX_PH 20
 #define EAT_SECONDS 1
 
 #define THINKING 0

@@ -137,7 +137,7 @@ int my_wait(Semaphore sem)
 
 void printSemaphores() {
   uint32_t index = 0;
-      ncPrintStringColour("ID      Value       Blocked Process\n", WHITE);
+      ncPrintStringColour("ID      Value       Blocked Processes\n", WHITE);
   while(index < qty) {
 
     ncPrintDec(sems[index]->id);

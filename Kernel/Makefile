@@ -2,7 +2,7 @@ include Makefile.inc
 
 KERNEL=kernel.bin
 
-MM=HEAP2
+MM=BUDDY
 
 SOURCES=$(wildcard *.c)
 SOURCES_LIBASM=$(wildcard LibASM/*.asm)

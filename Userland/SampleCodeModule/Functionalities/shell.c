@@ -6,11 +6,10 @@
 
 #define LOAD_GAME 0
 #define CONTINUE_GAME 1
-#define NULL ((void *)0)
 #define MAX_CMD_SIZE 20
 
-char *commands[MAX_CMD_SIZE] = {"help", "clean", "mmTest", "syncTest", "loop", "kill", "cat", "wc", "filter", "phylo", "block", "ps", "memStatus", "nice", "pipe", "sem"};
-void (*commandPointers[MAX_CMD_SIZE])(uint64_t, char **) = {helpMenu, clean, memoryManagerTest, syncTest, loop, kill, cat, wc, filter, phylo, block, ps, memStatus, nice, pipe, sem};
+char *commands[MAX_CMD_SIZE] = {"help", "clean", "mmTest", "syncTest", "loop", "kill", "cat", "wc", "filter", "phylo", "block", "ps", "memStatus", "nice", "pipe", "sem", "prioTest", "procTest"};
+void (*commandPointers[MAX_CMD_SIZE])(uint64_t, char **) = {helpMenu, clean, memoryManagerTest, syncTest, loop, kill, cat, wc, filter, phylo, block, ps, memStatus, nice, pipe, sem, prioTest, procTest};
 uint64_t commandsLength = sizeof(commands) / sizeof(commands[0]);
 
 void initializeShell()
@@ -78,8 +77,11 @@ void managePipe(char *command[], uint64_t pipeIdx, uint64_t argSize)
         return;
     }
 
-    sys_create_process((uint64_t)commandPointers[indexP1], 2, pipeIdx, command, STDIN, pipeWrite);
-    sys_create_process((uint64_t)commandPointers[indexP2], 1, argSize - pipeIdx - 1, command + pipeIdx + 1, pipeRead, STDOUT);
+    int bg = strCmp(command[argSize-1], "&") == 0;
+    argSize -= bg;
+
+    sys_create_process((uint64_t)commandPointers[indexP1], 1 + bg, pipeIdx, command, STDIN, pipeWrite);
+    sys_create_process((uint64_t)commandPointers[indexP2], 2, argSize - pipeIdx - 1, command + pipeIdx + 1, pipeRead, STDOUT);
 }
 
 int menuCommands(char *input)
@@ -322,6 +324,22 @@ void block(uint64_t argc, char *argv[])
     sys_change_process_state(pid, -1);
 
     sys_exit();
+}
+
+void prioTest(uint64_t argc, char *argv[]) {
+
+    test_prio();
+
+    sys_exit();
+
+}
+
+void procTest(uint64_t argc, char *argv[]) {
+
+    test_processes(argc, argv);
+
+    sys_exit();
+
 }
 
 void nice(uint64_t argc, char *argv[])
