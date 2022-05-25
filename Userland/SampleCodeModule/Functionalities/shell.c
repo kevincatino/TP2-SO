@@ -20,15 +20,13 @@ void initializeShell()
 
 void initialMessage()
 {
-    print("         _ _ _ ____ _    ____ ____ _  _ ____    ___ ____ \n");
-    print("         | | | |___ |    |    |  | |\\\/| |___     |  |    \n");
-    print("         |_|_| |___ |___ |___ |__| |  | |___     |  |__| \n");
+    print("             _ _ _ ____ _    ____ ____ _  _ ____    ___ ____ \n");
+    print("             | | | |___ |    |    |  | |\\\/| |___     |  |  |    \n");
+    print("             |_|_| |___ |___ |___ |__| |  | |___     |  |__| \n");
     print("                                                         \n");
-    print("                    ___   ___   ___                      \n");
-    print("                   |     |   | |                         \n");
-    print("                   |___  |   | |___                      \n");
-    print("                       | |   |     |                     \n");
-    print("                   ____| |___| ____|                     \n");
+    print("                         ____ ____ ____                     \n");
+    print("                         [__  |  | [__                      \n");
+    print("                         ___] |__| ___]                     \n\n");
 
     print("If you want to see the help menu, please write \'help\'.\nOtherwise, enter a valid command.\n\n");
 }

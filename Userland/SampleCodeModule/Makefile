@@ -19,7 +19,7 @@ OBJECTS_LIBASM=$(SOURCES_ASM:.asm=.o)
 all: $(MODULE)
 
 $(MODULE): $(OBJECTS) $(OBJECTS_LIBC) $(OBJECTS_TEST) $(OBJECTS_FUNC) $(OBJECTS_LIBASM) 
-	$(LD) $(LDFLAGS) -T sampleCodeModule.ld _loader.o $(filter-out _loader.o,$(OBJECTS)) $(OBJECTS_LIBC) $(OBJECTS_TEST) $(OBJECTS_FUNC) $(OBJECTS_LIBASM) -o ../$(MODULE)
+	@$(LD) $(LDFLAGS) -T sampleCodeModule.ld _loader.o $(filter-out _loader.o,$(OBJECTS)) $(OBJECTS_LIBC) $(OBJECTS_TEST) $(OBJECTS_FUNC) $(OBJECTS_LIBASM) -o ../$(MODULE)
 	@$(LD) $(LDFLAGS) -I./include -T sampleCodeModule.ld _loader.o $(filter-out _loader.o,$(OBJECTS)) $(OBJECTS_LIBC) $(OBJECTS_TEST) $(OBJECTS_FUNC) $(OBJECTS_LIBASM) --oformat=elf64-x86-64 -o ../0000-sampleCodeModule.elf
 	@echo "\033[3;36m[Userland/SampleCodeModule compiled]\033[0m"
 

@@ -1,0 +1,9 @@
+make --dry-run --keep-going --print-directory
+make: Entering directory '/home/lucas/Documents/ITBA/Tercer_Ano_1-2_2022/Sistemas_Operativos/TPEs/TPE2/TP2-SO'
+cd Bootloader; make all
+cd Kernel; make all
+cd Userland; make all
+cd Image; make all
+echo "\033[1;3;36m[Proyect compiled]\033[0m"
+make: Leaving directory '/home/lucas/Documents/ITBA/Tercer_Ano_1-2_2022/Sistemas_Operativos/TPEs/TPE2/TP2-SO'
+ 
