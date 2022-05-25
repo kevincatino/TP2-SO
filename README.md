@@ -1,4 +1,4 @@
-# Manual de Usuario Trabajo Practico Sistemas Operativos
+# Manual de Usuario Trabajo Especial Sistemas Operativos
 
 ## Pasos a seguir para la ejecucion: 
 
