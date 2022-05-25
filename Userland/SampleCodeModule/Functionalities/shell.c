@@ -79,9 +79,10 @@ void managePipe(char *command[], uint64_t pipeIdx, uint64_t argSize)
 
     int bg = strCmp(command[argSize-1], "&") == 0;
     argSize -= bg;
+    sys_create_process((uint64_t)commandPointers[indexP2], 2, argSize - pipeIdx - 1, command + pipeIdx + 1, pipeRead, STDOUT);
+
 
     sys_create_process((uint64_t)commandPointers[indexP1], 1 + bg, pipeIdx, command, STDIN, pipeWrite);
-    sys_create_process((uint64_t)commandPointers[indexP2], 2, argSize - pipeIdx - 1, command + pipeIdx + 1, pipeRead, STDOUT);
 }
 
 int menuCommands(char *input)
@@ -143,6 +144,8 @@ void helpMenu(uint64_t argc, char *argv)
     print("\'nice\' - Change the priority of a process given iID and the new priority.\n");
     print("\'pipe\' Print a list of all the pipes with their status.- \n");
     print("\'sem\' - Print a list of all semaphores with their properties\n");
+    print("\'procTest\' - Process management test.\n");
+    print("\'prioTest\' - Process priority management test.\n");
 
     sys_exit();
 }
@@ -314,7 +317,7 @@ void block(uint64_t argc, char *argv[])
 {
     if (argc == 1)
     {
-        print("Es necesario el pid del proceso");
+        print("The pid number is needed as parameter");
         sys_exit();
         return;
     }

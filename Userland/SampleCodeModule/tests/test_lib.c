@@ -14,7 +14,7 @@ uint64_t test_mm(uint64_t argc, char *argv[])
 
   if (argc != 2)
   {
-    print("Cantidad incorrecta de argumentos\n");
+    print("The percentage of heap used is neeced as parameter\n");
     return -1;
   }
 
@@ -105,8 +105,10 @@ int64_t test_processes(uint64_t argc, char *argv[])
   uint64_t max_processes;
   char *argvAux[] = {0};
 
-  if (argc != 2)
+  if (argc != 2) {
+    print("The number of processes is needed as parameter\n");
     return -1;
+  }
 
   if ((max_processes = satoi(argv[1])) <= 0)
     return -1;
@@ -323,13 +325,14 @@ void customLoop(int argc, char *argv[])
   }
 }
 
-void test_prio()
+void test_prio(uint64_t argc, char * argv[])
 {
   int64_t pids[TOTAL_PROCESSES];
   uint64_t i;
 
   char buf[TOTAL_PROCESSES][10] = {0};
   char *args[TOTAL_PROCESSES][2] = {0};
+
 
   for (i = 0; i < TOTAL_PROCESSES; i++)
   {

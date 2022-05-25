@@ -320,7 +320,11 @@ static ListNode *deleteProcess(ListNode *node, uint32_t pid)
   if (node->process.pid == pid)
   {
     if (node->process.priority == 1) {
-      changeProcessState(1, READY);
+      ListNode * aux = scheduler->start;
+      while (aux != NULL && (aux->process.priority != 1 || aux == node || aux->process.pid == 1) )
+       aux = aux->next;
+      if (aux == NULL)
+        changeProcessState(1, READY);
     }
     node->process.pstate = 2;
     ListNode *aux = node->next;
@@ -419,14 +423,42 @@ void changeProcessState(uint32_t pid, int state)
     pidPCB->pstate = 1;
 }
 
-void killForeground() {
-  ListNode * node = scheduler->start;
-  while(node != NULL && (node->process.pid == 1 || node->process.priority != 1)) {
-    node = node->next;
-  }
+static ListNode * deleteForeground(ListNode * node) {
   if (node == NULL)
-    return;
-  killPid(node->process.pid);
+    return node;
+  
+  if (node->process.priority == 1 && node->process.pid != 1) {
+    ListNode * aux = node->next;
+    // ncPrint("borro ");
+    // ncPrint(node->process.args[0]);
+    // ncPrint("\n");
+    deleteProcessFromSemaphores(node->process.pid);
+    deleteProcessFromPipes(node->process.pid);
+    closeFd(node->process.stdin);
+    closeFd(node->process.stdout);
+    freeMemory((void *)node->process.processMemory);
+    freeMemory((void *)node);
+    if (aux != NULL && aux->next != NULL)
+      aux->next = deleteForeground(aux->next);
+
+    return aux;
+  }
+
+  node->next = deleteForeground(node->next);
+
+  return node;
+}
+
+void killForeground() {
+  // ListNode * node = scheduler->start;
+  // while(node != NULL && (node->process.pid == 1 || node->process.priority != 1)) {
+  //   node = node->next;
+  // }
+  // if (node == NULL)
+  //   return;
+  // killPid(node->process.pid);
+  scheduler->start = deleteForeground(scheduler->start);
+  changeProcessState(1, READY);
 }
 
 // Cambia la prioridad de un proceso y lo reordena en la lista de prioridades

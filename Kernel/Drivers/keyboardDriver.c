@@ -31,7 +31,9 @@ void keyboard_handler() {
             mayusFlag = !mayusFlag;
         }
         else if (scanCode == 129) {
+            // printProcessList();
             killForeground();
+            // printProcessList();
         }
         if (scanCode > 1 && scanCode < KEYS && scanCodeToChar[scanCode][0] != 0) {
             putCharInBuffer(scanToChar(scanCode));

@@ -132,33 +132,7 @@ void closeFd(fd *fd)
     freeMemory(fd);
 }
 
-int pipeWrite(fd *fd, char *string)
-{
-    if (fd->readwrite != WRITE || (!fd->pipe->reading && fd->pipe->readableBytes == DATA_SIZE))
-        return -1;
 
-    int i = 0;
-    while (string[i])
-    {
-        while (fd->pipe->readableBytes == DATA_SIZE)
-        {
-            fd->pipe->waitingPCB = blockCurrentProcess();
-            forceScheduler();
-        }
-
-        fd->pipe->data[fd->pipe->writeIdx++] = string[i++];
-
-        if (fd->pipe->writeIdx == DATA_SIZE)
-            fd->pipe->writeIdx = 0;
-        fd->pipe->readableBytes++;
-    }
-    if (fd->pipe->waitingPCB != NULL)
-    {
-        fd->pipe->waitingPCB->pstate = READY;
-        fd->pipe->waitingPCB = NULL;
-    }
-    return i;
-}
 
 void printPipes() {
   uint32_t index = 0;
@@ -184,6 +158,39 @@ void printPipes() {
   }
 }
 
+int pipeWrite(fd *fd, char *string)
+{
+    // ncPrintStringColour("w", WHITE);
+    // printProcessList();
+    if (fd->readwrite != WRITE || (!fd->pipe->reading && fd->pipe->readableBytes == DATA_SIZE))
+        return -1;
+
+    int i = 0;
+        
+
+    while (string[i])
+    {
+        while (fd->pipe->readableBytes == DATA_SIZE)
+        {
+            fd->pipe->waitingPCB = blockCurrentProcess();
+            forceScheduler();
+        }
+
+        fd->pipe->data[fd->pipe->writeIdx++] = string[i++];
+
+        if (fd->pipe->writeIdx == DATA_SIZE)
+            fd->pipe->writeIdx = 0;
+        fd->pipe->readableBytes++;
+    }
+    if (fd->pipe->waitingPCB != NULL)
+    {
+        fd->pipe->waitingPCB->pstate = READY;
+        // ncPrintStringColour("d", WHITE);
+        fd->pipe->waitingPCB = NULL;
+    }
+    return i;
+}
+
 int pipeRead(fd *fd, char *buffer, int limit)
 {
     
@@ -194,7 +201,8 @@ int pipeRead(fd *fd, char *buffer, int limit)
 
     while (fd->pipe->readableBytes == 0)
     {
-        // ncPrint("a");
+
+
         if (!fd->pipe->writing) {
             return 0;
         }
