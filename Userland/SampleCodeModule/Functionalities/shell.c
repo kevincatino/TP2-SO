@@ -22,14 +22,19 @@ void initializeShell()
 void initialMessage()
 {
     print("         _ _ _ ____ _    ____ ____ _  _ ____    ___ ____ \n");
-    print("         | | | |___ |    |    |  | |\\/| |___     |  |  | \n");
+    print("         | | | |___ |    |    |  | |\\\/| |___     |  |    \n");
     print("         |_|_| |___ |___ |___ |__| |  | |___     |  |__| \n");
     print("                                                         \n");
-    print("                ____ ____ ____ _  _ _    ____ ____              \n");
-    print("                |__| |__/ |  | |  | | __ |  | [__               \n");
-    print("                |  | |  \\ |_\\| |__| |    |__| ___]              \n\n");
+    print("                    ___   ___   ___                      \n");
+    print("                   |     |   | |                         \n");
+    print("                   |___  |   | |___                      \n");
+    print("                       | |   |     |                     \n");
+    print("                   ____| |___| ____|                     \n");
+
     print("If you want to see the help menu, please write \'help\'.\nOtherwise, enter a valid command.\n\n");
 }
+
+
 
 void generalShell()
 {
@@ -47,7 +52,7 @@ void generalShell()
 
 void printUser()
 {
-    userPrint("User@TPE-ARQUI:$ ");
+    userPrint("User@TPE-SO:$ ");
 }
 
 void managePipe(char *command[], uint64_t pipeIdx, uint64_t argSize)
@@ -120,14 +125,22 @@ int menuCommands(char *input)
 void helpMenu(uint64_t argc, char *argv)
 {
     print("The commands and descriptions availables are:\n\n");
-    print("\'help\' - Displays the commands and descriptions of the functions availables.\n");
-    print("\'zeroDivExc\' - Displays a exception of invalid division by zero.\n");
-    print("\'invOpCodeExc\' - Displays a exception of invalid operation code.\n");
-    print("\'inforeg\' - Displays the information of the registers saved by the user using \'tab\' button.\n");
-    print("\'printmem\' - Makes a 32 Bytes memory dump to screen from the address passed by\nargument.\n");
-    print("\'time\' - Displays the current time and date.\n");
-    print("\'exit\' - Exit form the OS.\n");
-    print("\'clean\' - To clean the shell.\n");
+    print("\'help\' - Display the commands and descriptions of the functions availables.\n");
+    print("\'clean\' - Clean the shell.\n");
+    print("\'mmTest\' - Memory test.\n");
+    print("\'syncTest\' - Semaphore test.\n");
+    print("\'loop\' - Print a process ID with a message. Each one determinated by a quantity of seconds.\n"); 
+    print("\'kill\' - Kill a process given its ID.\n");
+    print("\'cat\' - Print the stdin as it is received.\n");
+    print("\'wc\' - Count the input lines.\n");
+    print("\'filter\' - Filter vocals from input.\n");
+    print("\'phylo\' - Implement the dining philosophers problem.\n");
+    print("\'block\' - Change the state of a process between blocked and ready given its ID.\n");
+    print("\'ps\' - Print the list of all processes with their properties.\n");
+    print("\'memStatus\' - Print the status of the memory.\n");
+    print("\'nice\' - Change the priority of a process given iID and the new priority.\n");
+    print("\'pipe\' Print a list of all the pipes with their status.- \n");
+    print("\'sem\' - Print a list of all semaphores with their properties\n");
 
     sys_exit();
 }

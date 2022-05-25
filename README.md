@@ -18,23 +18,29 @@ Una vez compilado el proyecto, vamos a la ejecucion. Para ejecutar, primero se d
 
 ## Dentro del programa
 
-Una vez ejecutado, se va a visualizar la shell. Para poder ver los comandos disponibles, se debe escribir: *help* y se desplegaran todos los comandos con sus descripciones.
-
-##### Dentro de la seccion de juegos
-
-Si usted accedio a la seccion de juegos, lo primero que va a visulaizar son las reglas. Para poder continuar, uds debe apretar cualquer letra, menos en enter. Luego, podra visulizar lo siguiente:
-- Una mini shell
-- El tiempo
-- Un cronometro
-- Un sudoku
-- Un ahorcado
-
-Para poder ingresar a cualquier juego, usted debe escribir el siguiente comando: *cs num* siendo num el numero de pantalla a la cual desea acceder. Si usted no recuerda algun comando, ingresando *help* le dira los comandos disponibles de esta seccion.
-**Nota: Dentro de cada juego, se va explicando paso a paso como se debe jugar**
+Una vez ejecutado, se va a visualizar la shell. Los comandos disponibles son los siguientes:
+| Comando | Accion |
+| :---:   | :-: |
+| help | Despliega en pantalla las funciones disponibles para el usuario y que accion realizan. |
+| clean   | Limpia la shell. |
+| mmTest   | Test de memoria. |
+| syncTest   | Test de semaforo. |
+| loop   | Imprime el ID de un proceso con un mensaje, determinado por una cantidad de segundos. |
+| kill   | Mata un proceso dado su ID. |
+| cat   | Imprime en pantalla los caracteres recibidos por STDIN. |
+| wc   | Cuenta la cantidad de lineas ingresadas por STDIN. |
+| filter   | Filtra las vocales de lo que recibe por STDIN. |
+| phylo   | Implementa el problema de sincronización de los filósofos. |
+| block   | Alterna el estado de un proceso dado su ID. |
+| ps   | Despliega una lista de procesos con sus propiedades. |
+| memStatus   | Imprime el estado de la memoria. |
+| nice   | Cambia la prioridad de un proceso dado su ID y la nueva prioridad. |
+| pipe   |  Despliega una lista de los pipes activos con sus propiedades. |
+| sem   |  Despliega una lista de los semaforos activos con sus propiedades. |
 
 
 ## Trabajo realizado por:
 
 * Banfi, Malena     (Legajo: 61008)
+* Catino, Kevin     (Legajo: 61643)
 * Fleischer, Lucas  (Legajo: 61153)
-* Occhipinti, Abril (Legajo: 61159)
