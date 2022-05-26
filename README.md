@@ -8,7 +8,10 @@ Para compilar y linkeditar el proyecto correctamente, se provee un script de com
 - sudo docker run -v ${PWD}:/root -ti -w /root agodio/itba-so:1.0 ${1} make clean
 - sudo docker run -v ${PWD}:/root -ti -w /root agodio/itba-so:1.0 ${1} make all
 
-Este script se encuntra tanto en Toolchain, como en la raiz del proyecto, ya que para obtener una compilacion y linkedicion exitosa, primero se debe compilar desde Toolchain y luego desde la raiz. Es decir, usted primero debe dirigirse a Toolchain y ejecutar de la siguiente manera: *./compile.sh*. Luego debe regresar a la raiz del proyecto y ejecutar el mismo comando.
+Este script se encuntra tanto en Toolchain, como en la raiz del proyecto, ya que para obtener una compilacion y linkedicion exitosa, primero se debe compilar desde Toolchain y luego desde la raiz. Es decir, usted primero debe dirigirse a Toolchain y ejecutar de la siguiente manera: *./compile.sh*. Luego debe regresar a la raiz del proyecto y ejecutar el mismo comando. 
+Si usted quiere compilar con el HEAP2, debe ingresar el comando *./compile.sh HEAP2*. En caso de querer ejecutar con el BUDDY use el comando *./compile.sh BUDDY*. 
+Si solamente se ejecuta el comando *./compile.sh* (sin argumentos) compilara por defecto el proyecto con el BUDDY. 
+
 
 
 ### 2. Ejecucion

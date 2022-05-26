@@ -107,6 +107,7 @@ static size_t insertBlockIntoFreeList(MemoryManagerADT memoryManager, MemoryBloc
 }
 
 void *memoryAlloc(MemoryManagerADT const memoryManager, size_t memoryToAlloc) {
+
   MemoryBlock *block, *prevBlock;
   void *blockToReturn = NULL;
 
