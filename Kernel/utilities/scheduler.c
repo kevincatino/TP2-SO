@@ -164,8 +164,7 @@ static ListNode *loadProcess(ListNode *node, uint32_t pid, uint8_t priority, int
       
     uint64_t processMemory = (uint64_t)allocMemory(DEFAULT_PROGRAM_SIZE);
 
-    // initProcess es una funcion de assembler que inicia el proceso y devuelve el nuevo stackpointer. Los procesos por defecto son de 4K de tamanio.
-    // todo: Usar y probar si anda forma de inicializar en una sola linea: ej newNode->p = {.sp = sp, etc.}
+
     uint64_t sp = initProcess(processMemory + DEFAULT_PROGRAM_SIZE, ip, argc, newNode->process.argv);
     newNode->process.sp = sp;
     newNode->process.bp = processMemory + DEFAULT_PROGRAM_SIZE - 1;
@@ -174,8 +173,6 @@ static ListNode *loadProcess(ListNode *node, uint32_t pid, uint8_t priority, int
     newNode->process.stdout = stdout;
     newNode->process.waitingPid = 0;
 
-    // ncPrint("stdout es ");
-    // ncPrintDec(stdout);
 
     return newNode;
   }
@@ -522,8 +519,6 @@ void awakeProcessFromKBQueue()
 {
   if (kbList->size == 0)
     return;
-  // ncPrintDec(kbList->size);
-  // ncPrint("Awakening ");
 
   kbList->size--;
   kbList->list->process->pstate = READY;

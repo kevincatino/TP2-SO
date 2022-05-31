@@ -91,13 +91,7 @@ int menuCommands(char *input)
 {
     char *command[MAX_ARGUMENTS] = {NULL, NULL, NULL, NULL, NULL, NULL};
     int argSize = strtok(input, " ", command, MAX_ARGUMENTS);
-    // int j = 0;
 
-    // for (j = 0 ; j<argSize ; j++) {
-    //     print(command[j]);
-    //     print("\n");
-    // }
-    // return 1;
 
 
     int index = 0;
@@ -122,8 +116,6 @@ int menuCommands(char *input)
             }
             else
             {
-                // print("my pid is ");
-                // printNum(sys_pid());
                 sys_create_process((uint64_t)commandPointers[i], 1, argSize, command, STDIN, STDOUT);
             }
             sys_yield();

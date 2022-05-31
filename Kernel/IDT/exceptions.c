@@ -86,13 +86,6 @@ uint64_t hexaToInt(char *s) {
 	return rta;
 }
 
-// int strlength(char * string) {
-// 	int i=0;
-// 	while(string[i]!=0) {
-// 		i++;
-// 	}
-// 	return i;
-// }
 
 int power(int num, int p) {
 	int res = 1;

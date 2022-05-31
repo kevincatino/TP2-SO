@@ -40,18 +40,6 @@ uint64_t sys_write(char *buffer, uint64_t count)
 
     FileDes stdout = getStdout();
 
-    // if (fd == 1) {
-    //     color = WHITE;
-    // } else if (fd == 2) {
-    //     color = RED;
-    // } else {
-    //     ncPrint("Error in file descriptor");
-    //     ncNewline();
-    //     return 0;
-    // }
-
-    // ncPrintDec((uint64_t) stdout);
-
     if (stdout == STDOUT)
     {
         while (count-- && *buffer != 0)
@@ -62,8 +50,6 @@ uint64_t sys_write(char *buffer, uint64_t count)
     }
     else
     {
-        // ncPrintStringColour("Writing on pipe\n", WHITE);
-        // ncPrint(buffer);
         buffer[count] = 0;
         pipeWrite(stdout, buffer);
     }
@@ -88,19 +74,16 @@ uint64_t sys_read(char *buffer, uint64_t count)
     {
         if (stdin == STDIN)
         {
-            // ncPrint("Leo de stdin");
+
             buffer[i] = getChar();
         }
         else
         {
             if(pipeRead(stdin, &buffer[i], 1) == 0)
                 return i;
-            // ncPrintChar(buffer[i]);
-            // ncPrintChar(' ');
+
         }
 
-        // if (buffer[i] == 0)
-        //     return i;
 
         i++;
     }
@@ -115,9 +98,7 @@ char sys_get_char()
         return 0;
 
     return c;
-    // ncPrint("retorno ");
-    // ncPrintDec(c);
-    // ncPrint(" ");
+
 
 }
 

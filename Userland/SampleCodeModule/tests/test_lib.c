@@ -301,9 +301,6 @@ void testNoSync()
 #include "test_util.h"
 #include "syscall.h"
 
-#define MINOR_WAIT 1000000 // TODO: Change this value to prevent a process from flooding the screen
-#define WAIT 100000000000  // TODO: Change this value to make the wait long enough to see theese processes beeing run at least twice
-
 #define TOTAL_PROCESSES 3
 #define LOWEST 5  // TODO: Change as required
 #define MEDIUM 3  // TODO: Change as required
@@ -338,7 +335,6 @@ void test_prio(uint64_t argc, char * argv[])
   for (i = 0; i < TOTAL_PROCESSES; i++)
   {
     numToStr(i, 0, buf[i]);
-    // print(buf[i]);
     args[i][0] = "testLoop";
     args[i][1] = buf[i];
 
